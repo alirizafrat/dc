@@ -1,0 +1,20 @@
+{
+  "mongoDB": "tantoony",
+  "CdSize": 12,
+  "vanityURL": "tantoony",
+  "dir": "hub",
+  "forbidden": [],
+  "root": [
+    "674565119161794560",
+    "785851678694965288"
+  ],
+  "godtier": [
+    "674565119161794560"
+  ],
+  "testers": [],
+  "vanityUses": 56,
+  "lastCrush": "804158525399629854",
+  "taglıAlım": false,
+  "ohal": false,
+  "stats": []
+}
