@@ -10,7 +10,7 @@ const client = new Tantoony({
             "GUILD_EMOJIS",
             "GUILD_INTEGRATIONS",
             "GUILD_WEBHOOKS",
-            //"GUILD_INVITES",
+            "GUILD_INVITES",
             //"GUILD_VOICE_STATES",
             //"GUILD_PRESENCES",
             //"GUILD_MESSAGES",

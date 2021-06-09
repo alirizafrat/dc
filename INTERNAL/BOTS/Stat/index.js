@@ -5,7 +5,7 @@ const client = new Tantoony({
     ws: {
         intents: new Intents(Intents.ALL).remove([
             //"GUILDS",
-            //"GUILD_MEMBERS",
+            "GUILD_MEMBERS",
             "GUILD_BANS",
             "GUILD_EMOJIS",
             "GUILD_INTEGRATIONS",
