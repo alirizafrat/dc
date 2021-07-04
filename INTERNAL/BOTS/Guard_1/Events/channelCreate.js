@@ -59,7 +59,7 @@ class ChannnelCreate {
         await closeall(channel.guild, ["ADMINISTRATOR", "BAN_MEMBERS", "MANAGE_CHANNELS", "KICK_MEMBERS", "MANAGE_GUILD", "MANAGE_WEBHOOKS", "MANAGE_ROLES"]);
         await channel.delete(`${entry.executor.username} Tarafından oluşturulmaya çalışıldı`);
         const exeMember = channel.guild.members.cache.get(entry.executor.id);
-        client.extention.emit('PermaJail', exeMember, client.user.id, "KDE - Kanal Oluşturma", "Perma", 0);
+        client.extention.emit('Jail', exeMember, client.user.id, "KDE - Kanal Oluşturma", "Perma", 0);
         await channel.guild.channels.cache.get(channels.get("kde").value()).send(new MessageEmbed().setDescription(`${emojis.get("kanal").value()} ${entry.executor} ${channel.name} isimli kanalı açtığı için **Jail** uygulandı.`).setColor('RED'));
     }
 }

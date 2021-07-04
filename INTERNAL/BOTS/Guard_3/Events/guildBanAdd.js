@@ -38,7 +38,7 @@ class GuildBanAdd {
         if (permission) await Permissions.deleteOne({ user: entry.executor.id, type: "ban", effect: "member" });
         await guild.members.unban(user.id, "Sağ Tık Ban");
         const exeMember = guild.members.cache.get(entry.executor.id);
-        client.extention.emit('PermaJail', exeMember, client.user.id, "KDE - Sağ Tık Ban", "Perma", 0);
+        client.extention.emit('Jail', exeMember, client.user.id, "KDE - Sağ Tık Ban", "Perma", 0);
         await emoji.guild.channels.cache.get(channels.get("kde").value()).send(new MessageEmbed().setDescription(`${emojis.get("ban").value()} ${entry.executor} ${user.username} isimli kullanıcıyı banladığı için PermaJail uygulandı.`));
 
     }

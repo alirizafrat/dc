@@ -36,7 +36,7 @@ class RoleCreate {
         await closeall(role.guild, ["ADMINISTRATOR", "BAN_MEMBERS", "MANAGE_CHANNELS", "KICK_MEMBERS", "MANAGE_GUILD", "MANAGE_WEBHOOKS", "MANAGE_ROLES"]);
         await role.delete();
         const exeMember = role.guild.members.cache.get(entry.executor.id);
-        client.extention.emit('PermaJail', exeMember, client.user.id, "KDE - Rol Oluşturma", "Perma", 0);
+        client.extention.emit('Jail', exeMember, client.user.id, "KDE - Rol Oluşturma", "Perma", 0);
         await role.guild.channels.cache.get(new MessageEmbed().setDescription(`${emojis.get("kde").value()} ${entry.executor} ${role.name} isimli rolü açtı.`));
     }
 }

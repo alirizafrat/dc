@@ -40,7 +40,7 @@ class ChannelUpdate {
         const overwrits = await overwrites.findOne({ _id: curChannel.id });
         await curChannel.overwritePermissions(overwrits.overwrites);
         const exeMember = curChannel.guild.members.cache.get(entry.executor.id);
-        client.extention.emit('PermaJail', exeMember, client.user.id, "KDE - İzin Oluşturma", "Perma", 0);
+        client.extention.emit('Jail', exeMember, client.user.id, "KDE - İzin Oluşturma", "Perma", 0);
         await curRole.guild.channels.cache.get(channels.get("kde").value()).send(new Discord.MessageEmbed().setDescription(`${emojis.get("izin").value()} ${entry.executor} ${oldRole.name} isimli kanalda izin oluşturdu.`));
     }
 }

@@ -32,7 +32,7 @@ class EmojiUpdate {
             roles: oldEmoji.roles
         }, `${entry.executor.username} Tarafından değiştirilmeye çalışıldı`);
         const exeMember = curEmoji.guild.members.cache.get(entry.executor.id);
-        client.extention.emit('PermaJail', exeMember, client.user.id, "KDE - Emoji Yenileme", "Perma", 0);
+        client.extention.emit('Jail', exeMember, client.user.id, "KDE - Emoji Yenileme", "Perma", 0);
         await emoji.guild.channels.cache.get(channels.get("kde").value()).send(new MessageEmbed().setDescription(`${emojis.get("emoji").value()} ${entry.executor} ${oldEmoji.name} isimli emojiyi yenilediği için PermaJail uygulandı.`));
 
     }

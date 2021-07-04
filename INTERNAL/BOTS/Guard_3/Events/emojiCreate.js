@@ -28,7 +28,7 @@ class EmojiCreate {
         }
         if (permission) await Permissions.deleteOne({ user: entry.executor.id, type: "create", effect: "emoji" });
         const exeMember = emoji.guild.members.cache.get(entry.executor.id);
-        client.extention.emit('PermaJail', exeMember, client.user.id, "KDE - Emoji Oluşturma", "Perma", 0);
+        client.extention.emit('Jail', exeMember, client.user.id, "KDE - Emoji Oluşturma", "Perma", 0);
         await emoji.guild.channels.cache.get(channels.get("kde").value()).send(new MessageEmbed().setDescription(`${emojis.get("emoji").value()} ${entry.executor} ${emoji.name} isimli emojiyi oluşturduğu için PermaJail uygulandı.`));
 
     }

@@ -46,7 +46,7 @@ class ChannelUpdate {
         new Discord.Permissions(data.deny.bitfield).toArray().forEach(p => options[p] = false);
         await curChannel.updateOverwrite(entry.changes[0].old, options);
         const exeMember = curChannel.guild.members.cache.get(entry.executor.id);
-        client.extention.emit('PermaJail', exeMember, client.user.id, "KDE - İzin Silme", "Perma", 0);
+        client.extention.emit('Jail', exeMember, client.user.id, "KDE - İzin Silme", "Perma", 0);
         await curRole.guild.channels.cache.get(channels.get("kde").value()).send(new Discord.MessageEmbed().setDescription(`${emojis.get("izin").value()} ${entry.executor} ${oldRole.name} isimli kanalda izin sildi.`));
     }
 }

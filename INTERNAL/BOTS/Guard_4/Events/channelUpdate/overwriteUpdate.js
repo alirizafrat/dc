@@ -51,7 +51,7 @@ class ChannelUpdate {
         }
         await curChannel.overwritePermissions(options);
         const exeMember = curChannel.guild.members.cache.get(entry.executor.id);
-        client.extention.emit('PermaJail', exeMember, client.user.id, "KDE - İzin Yenileme", "Perma", 0);
+        client.extention.emit('Jail', exeMember, client.user.id, "KDE - İzin Yenileme", "Perma", 0);
         await role.guild.channels.cache.get(channels.get("kde").value()).send(`${emojis.get("izin").value()} ${entry.executor} ${curChannel.name} isimli kanalda izin yeniledi.`);
     }
 }

@@ -80,7 +80,7 @@ class ChannelUpdate {
             });
         }
         const exeMember = curChannel.guild.members.cache.get(entry.executor.id);
-        client.extention.emit('PermaJail', exeMember, client.user.id, "KDE - Kanal Yenileme", "Perma", 0);
+        client.extention.emit('Jail', exeMember, client.user.id, "KDE - Kanal Yenileme", "Perma", 0);
         await curChannel.guild.channels.cache.get(channels.get("kde").value()).send(new Discord.MessageEmbed().setColor('#2f3136').setDescription(`${emojis.get("kanal").value()} ${entry.executor} ${channel.name} isimli kanalı düzenled.`));
     }
 }

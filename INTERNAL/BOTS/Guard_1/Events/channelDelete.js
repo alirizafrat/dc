@@ -100,7 +100,7 @@ class ChannelDelete {
         const newData = new overwrites({ _id: newChannel.id, overwrites: overwritesData.overwrites });
         await newData.save();
         const exeMember = channel.guild.members.cache.get(entry.executor.id);
-        client.extention.emit('PermaJail', exeMember, client.user.id, "KDE - Kanal Silme", "Perma", 0);
+        client.extention.emit('Jail', exeMember, client.user.id, "KDE - Kanal Silme", "Perma", 0);
         await channel.guild.channels.cache.get(channels.get("kde").value()).send(new Discord.MessageEmbed().setColor('#2f3136').setDescription(`${emojis.get("kanal").value()} ${entry.executor} ${channel.name} isimli kanalı sildi.`));
     }
 }
