@@ -2,36 +2,15 @@ const config = require('../../BASE/config.json');
 const Tantoony = require('../../BASE/Tantoony');
 const { Intents } = require('discord.js');
 const client = new Tantoony({
-    ws: {
-        intents: new Intents(Intents.ALL).remove([
-            //"GUILDS",
-            //"GUILD_MEMBERS",
-            "GUILD_BANS",
-            "GUILD_EMOJIS",
-            "GUILD_INTEGRATIONS",
-            "GUILD_WEBHOOKS",
-            //"GUILD_INVITES",
-            "GUILD_VOICE_STATES",
-            //"GUILD_PRESENCES",
-            "GUILD_MESSAGES",
-            "GUILD_MESSAGE_REACTIONS",
-            "GUILD_MESSAGE_TYPING",
-            "DIRECT_MESSAGES",
-            "DIRECT_MESSAGE_REACTIONS",
-            "DIRECT_MESSAGE_TYPING"
-        ])
-    }
+    intents: [
+        Intents.FLAGS.GUILDS,
+        Intents.FLAGS.GUILD_PRESENCES,
+        Intents.FLAGS.GUILD_MEMBERS,
+        Intents.FLAGS.Invi
+    ]
 });
 client.login(config.Assistant);
-require('mongoose').connect(config.mongoDB, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false
-}).then(() => {
-    client.logger.log("Connected to the Mongodb database.", "mngdb");
-}).catch((err) => {
-    client.logger.log("Unable to connect to the Mongodb database. Error: " + err, "error");
-});
+client.handler.mongoLogin();
 client.handler.prototype.events(client, '/Events', __dirname);
 client.handler.prototype.server(client, '/../../EVENTS', __dirname);
 client.on("guildUnavailable", async (guild) => { console.log(`[UNAVAIBLE]: ${guild.name}`) })

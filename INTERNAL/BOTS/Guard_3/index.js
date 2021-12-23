@@ -2,25 +2,12 @@ const config = require('../../BASE/config.json');
 const Tantoony = require('../../BASE/Tantoony');
 const { Intents } = require('discord.js');
 const client = new Tantoony({
-    ws: {
-        intents: new Intents(Intents.ALL).remove([
-            //"GUILDS",
-            "GUILD_MEMBERS",
-            //"GUILD_BANS",
-            //"GUILD_EMOJIS",
-            "GUILD_INTEGRATIONS",
-            "GUILD_WEBHOOKS",
-            "GUILD_INVITES",
-            "GUILD_VOICE_STATES",
-            //"GUILD_PRESENCES",
-            "GUILD_MESSAGES",
-            "GUILD_MESSAGE_REACTIONS",
-            "GUILD_MESSAGE_TYPING",
-            "DIRECT_MESSAGES",
-            "DIRECT_MESSAGE_REACTIONS",
-            "DIRECT_MESSAGE_TYPING"
-        ])
-    }
+    intents: [
+        Intents.FLAGS.GUILDS,
+        Intents.FLAGS.GUILD_PRESENCES,
+        Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
+        Intents.FLAGS.GUILD_BANS
+    ]
 });
 client.login(config.Manager);
 require('mongoose').connect(config.mongoDB, {
