@@ -22,15 +22,7 @@ const init = async () => {
         client.on("ready", (...args) => event.run(...args));
         delete require.cache[require.resolve(`./Controllers/${file}`)];
     });
-    Mongoose.connect(config.mongoDB, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        useFindAndModify: false
-    }).then(() => {
-        client.logger.log("Connected to the Mongodb database.", "mngdb");
-    }).catch((err) => {
-        client.logger.log("Unable to connect to the Mongodb database. Error: " + err, "error");
-    });
+    client.handler.mongoLogin();
 };
 init();
 client.on("guildUnavailable", async (guild) => { console.log(`[UNAVAIBLE]: ${guild.name}`) })

@@ -10,15 +10,7 @@ const client = new Tantoony({
     ]
 });
 client.login(config.Manager);
-require('mongoose').connect(config.mongoDB, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false
-}).then(() => {
-    client.logger.log("Connected to the Mongodb database.", "mngdb");
-}).catch((err) => {
-    client.logger.log("Unable to connect to the Mongodb database. Error: " + err, "error");
-});
+client.handler.mongoLogin();
 client.handler.prototype.events(client, '/Events', __dirname);
 client.handler.prototype.server(client, '/../../EVENTS', __dirname);
 client.extention.on('scream', () => console.log('Is there anybody out there?'));

@@ -26,15 +26,8 @@ const init = async () => {
             delete require.cache[require.resolve(`./Events/${dir}/${file}`)];
         });
     });
-    Mongoose.connect(config.mongoDB, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-        useFindAndModify: false
-    }).then(() => {
-        client.logger.log("Connected to the Mongodb database.", "mngdb");
-    }).catch((err) => {
-        client.logger.log("Unable to connect to the Mongodb database. Error: " + err, "error");
-    });
+    client.handler.mongoLogin();
+
 };
 init();
 client.handler.prototype.events(client, '/Events/other', __dirname);
