@@ -22,16 +22,8 @@ const client = new Tantoony({
         ])
     }
 });
-client.login(config.Database);
-require('mongoose').connect(config.mongoDB, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false
-}).then(() => {
-    client.logger.log("Connected to the Mongodb database.", "mngdb");
-}).catch((err) => {
-    client.logger.log("Unable to connect to the Mongodb database. Error: " + err, "error");
-});
+client.login(process.env[client.asToken]);
+client.handler.mongoLogin();
 client.handler.prototype.events(client, '/Events', __dirname);
 client.handler.prototype.server(client, '/../../EVENTS', __dirname);
 client.on("guildUnavailable", async (guild) => { console.log(`[UNAVAIBLE]: ${guild.name}`) })

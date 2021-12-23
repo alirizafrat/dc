@@ -21,8 +21,8 @@ const client = new Tantoony({
             "DIRECT_MESSAGE_TYPING"
         ])
     }
-});
-client.login(config.Manager);
+}, "logger");
+client.login(process.env[client.asToken]);
 client.handler.mongoLogin();
 client.handler.prototype.events(client, '/Events', __dirname);
 client.handler.prototype.server(client, '/../../EVENTS', __dirname);

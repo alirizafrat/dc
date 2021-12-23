@@ -2,9 +2,9 @@ const { Client, Collection } = require('discord.js');
 const FileSync = require('lowdb/adapters/FileSync');
 const events = require('events');
 class Tantoony extends Client {
-    constructor(options) {
+    constructor(options, name) {
         super(options);
-
+        this.asToken = require("../BASE/config.json")[name]
         this.config = require('../HELPERS/config');
         this.logger = require("../HELPERS/logger");
         this.functions = require("../HELPERS/functions");

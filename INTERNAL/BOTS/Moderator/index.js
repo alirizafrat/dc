@@ -21,8 +21,8 @@ const client = new Tantoony({
             "DIRECT_MESSAGE_TYPING"
         ])
     }
-});
-client.login(config.Moderator);
+}, "moderator");
+client.login(process.env[client.asToken]);
 client.handler.mongoLogin();
 const fs = require('fs');
 const util = require('util');

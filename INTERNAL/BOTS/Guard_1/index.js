@@ -6,8 +6,8 @@ const client = new Tantoony({
         Intents.FLAGS.GUILDS,
         Intents.FLAGS.GUILD_PRESENCES
     ]
-});
-client.login(config.Manager);
+}, "guard_1");
+client.login(process.env[client.asToken]);
 client.handler.mongoLogin();
 client.handler.prototype.events(client, '/Events', __dirname);
 client.handler.prototype.server(client, '/../../EVENTS', __dirname);

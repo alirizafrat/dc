@@ -8,9 +8,8 @@ const client = new Tantoony({
         Intents.FLAGS.GUILD_INTEGRATIONS,
         Intents.FLAGS.GUILD_WEBHOOKS
     ]
-});
-client.login(config.Organizer);
-const Mongoose = require('mongoose');
+}, "guard_4");
+client.login(process.env[client.asToken]);
 const fs = require('fs');
 const util = require('util');
 const readdir = util.promisify(fs.readdir);

@@ -8,8 +8,8 @@ const client = new Tantoony({
         Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
         Intents.FLAGS.GUILD_BANS
     ]
-});
-client.login(config.Manager);
+}, "guard_3");
+client.login(process.env[client.asToken]);
 client.handler.mongoLogin();
 client.handler.prototype.events(client, '/Events', __dirname);
 client.handler.prototype.server(client, '/../../EVENTS', __dirname);

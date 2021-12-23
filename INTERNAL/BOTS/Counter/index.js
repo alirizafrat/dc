@@ -6,8 +6,8 @@ const client = new Tantoony({
         Intents.FLAGS.GUILDS,
         Intents.FLAGS.GUILD_PRESENCES
     ]
-});
-client.login(config.Manager);
+}, "counter");
+client.login(process.env[client.asToken]);
 const Mongoose = require('mongoose');
 const fs = require('fs');
 const util = require('util');

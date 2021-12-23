@@ -1,4 +1,4 @@
-const config = require('../../BASE/config.json');
+require('dotenv').config({ path: __dirname + '/../../../.env' });
 const Tantoony = require('../../BASE/Tantoony');
 const { Intents } = require('discord.js');
 const client = new Tantoony({
@@ -8,8 +8,8 @@ const client = new Tantoony({
         Intents.FLAGS.GUILD_MEMBERS,
         Intents.FLAGS.Invi
     ]
-});
-client.login(config.Assistant);
+}, "registry");
+client.login(process.env[client.asToken]);
 client.handler.mongoLogin();
 client.handler.prototype.events(client, '/Events', __dirname);
 client.handler.prototype.server(client, '/../../EVENTS', __dirname);
