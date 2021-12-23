@@ -6,7 +6,7 @@ const client = new Tantoony({
         Intents.FLAGS.GUILDS,
         Intents.FLAGS.GUILD_PRESENCES,
         Intents.FLAGS.GUILD_MEMBERS,
-        Intents.FLAGS.Invi
+        Intents.FLAGS.GUILD_INVITES
     ]
 }, "registry");
 client.login(process.env[client.asToken]);
