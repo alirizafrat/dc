@@ -12,7 +12,7 @@ class Tantoony extends Client {
         this.extention = new EventEmitter();
         this.adapters = file => new FileSync(`../../BASE/_${file}.json`);
         this.mongoLogin();
-        this.login(process.env[require("../BASE/config.json")[name]]);
+        this.login(process.env[this.config.vars[name]]);
         this.responders = new Collection();
 
         this.cmdCoodown = new Object();
@@ -31,11 +31,11 @@ class Tantoony extends Client {
     };
 
     mongoLogin() {
-        require('mongoose').connect(`mongodb://${process.env.ipadress}:${process.env.port}`, {
-            user: this.config.username,
+        require('mongoose').connect(`mongodb://${process.env.ipadress}:${process.env.port || 27017}`, {
+            user: this.config.mongoDB.user,
             pass: process.env.mongoDB,
-            dbName: this.config.mongoDB,
-            authSource: this.config.auth
+            dbName: this.config.mongoDB.name,
+            authSource: this.config.mongoDB.auth
         }).then(() => {
             this.logger.log("Connected to the Mongodb database.", "mngdb");
         }).catch((err) => {

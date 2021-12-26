@@ -5,11 +5,6 @@ const Commands = require('../MODELS/Base/Commands');
 const idc = require('shortid');
 module.exports = {
 
-    async findCommand(name) {
-        let commandData = await Commands.findOne({ name: name });
-        return commandData
-    },
-
     comparedate(date) {
         let now = new Date();
         let diff = now.getTime() - date.getTime();
@@ -29,70 +24,6 @@ module.exports = {
         return secs;
     },
 
-    async createCommand(name, datam) {
-        const id = idc.generate();
-        datam._id = id;
-        let commandData = await Commands.findOne({ name: name });
-        if (!commandData) {
-            try {
-                let cmd = new Commands(datam);
-                await cmd.save();
-            } catch (error) {
-                console.log(error);
-            }
-        }
-        commandData = await Commands.findOne({ name: name });
-        return commandData
-    },
-    /**
-     * Gets the users data
-     * @param {object} client The discord client
-     * @param {array} users The users to gets data
-     * @returns The users data
-     */
-    async getUsersData(client, users) {
-        return new Promise(async function (resolve, reject) {
-            let usersData = [];
-            for (let u of users) {
-                let result = await client.usersData.find({ id: u.id });
-                if (result[0]) {
-                    usersData.push(result[0]);
-                } else {
-                    let user = new client.usersData({
-                        id: u.id
-                    });
-                    await user.save();
-                    usersData.push(user);
-                }
-            }
-            resolve(usersData);
-        });
-    },
-
-    /**
-     * Gets message prefix
-     * @param {object} message The Discord message
-     * @returns The prefix
-     */
-    getPrefix(message, data) {
-        if (message.channel.type !== "dm") {
-            const prefixes = [
-                `<@${message.client.user.id}>`,
-                data.config.botname,
-                data.guild.prefix
-            ];
-            let prefix = null;
-            prefixes.forEach((p) => {
-                if (message.content.startsWith(p)) {
-                    prefix = p;
-                }
-            });
-            return prefix;
-        } else {
-            return true;
-        }
-    },
-
     welcomeMsg(member, durum) {
         let embed = new Discord.MessageEmbed()
             .setColor("#2f3136")
@@ -109,7 +40,6 @@ module.exports = {
         return embed;
     },
 
-    // This function sort an array 
     sortByKey(array, key) {
         return array.sort(function (a, b) {
             let x = a[key];
@@ -118,7 +48,6 @@ module.exports = {
         });
     },
 
-    // This function return a shuffled array
     shuffle(pArray) {
         let array = [];
         pArray.forEach(element => array.push(element));
@@ -136,10 +65,10 @@ module.exports = {
         return array;
     },
 
-    // This function return a random number between min and max
     randomNum(min, max) {
         return Math.floor(Math.random() * (max - min)) + min;
     },
+
     rain(client, sayi) {
         const emojis = low(client.adapters('emojis')).get("numbers").value();
         var basamakbir = sayi.toString().replace(/ /g, "     ");
@@ -184,54 +113,8 @@ module.exports = {
         return days;
     },
 
-    getPath(obj, value, path) {
-
-        if (typeof obj !== 'object') {
-            return;
-        }
-
-        for (var key in obj) {
-            if (obj.hasOwnProperty(key)) {
-                var t = path;
-                var v = obj[key];
-                if (!path) {
-                    path = key;
-                }
-                else {
-                    path = path + '.' + key;
-                }
-                if (v === value) {
-                    return path.toString();
-                }
-                else if (typeof v !== 'object') {
-                    path = t;
-                };
-                var res = this.sayi(v, value, path);
-                if(res) {
-                    return res;
-                } 
-            }
-        }
-
-    },
-
-    async closeall(obj, permes) {
+    closeall(obj, permes) {
         obj.roles.cache.filter(rol => rol.editable).filter(rol => permes.some(xd => rol.permissions.has(xd))).forEach(async (rol) => rol.setPermissions(0));
-    },
-
-    trstats(word) {
-        let gotkokuyor = "";
-        if (word === 'dnd') {
-            gotkokuyor = 'Rahatsız Etmeyin';
-        } else if (word === 'online') {
-            gotkokuyor = "Çevrimiçi";
-        } else if (word === 'idle') {
-            gotkokuyor = 'Boşta';
-        } else {
-            gotkokuyor = 'Çevrimdışı';
-        }
-
-        return gotkokuyor;
     }
 
 };
