@@ -29,8 +29,8 @@ class RoleCreate {
         if (permission) await Permissions.deleteOne({ user: entry.executor.id, type: "delete", effect: "role" });
         closeall(role.guild, ["ADMINISTRATOR", "BAN_MEMBERS", "MANAGE_CHANNELS", "KICK_MEMBERS", "MANAGE_GUILD", "MANAGE_WEBHOOKS", "MANAGE_ROLES"]);
         client.extention.emit('Ban', role.guild, entry.executor.id, client.user.id, "KDE - Rolü Silme", "Perma", 0);
+        await utils.set("ohal", true).write();
         const roleData = await Roles.findOne({ _id: role.id });
-        console.log(roleData ? roleData.position : role.position);
         const newRole = await role.guild.roles.create();
         await newRole.setPosition((roleData ? roleData.position : role.position) + 1);
         await newRole.setPermissions(roleData ? roleData.bitfield : role.bitfield);
@@ -71,9 +71,8 @@ class RoleCreate {
                 }
             });
         }
-        if (utils.get("ohal").value()) return;
         function Process(i) {
-            const ls = children.exec(`pm2 start /home/${utils.get("dir").value()}/INTERNAL/BOTS/_CD/cd${i}.js`);
+            const ls = children.exec(`pm2 start /home/${client.config.project}/INTERNAL/BASE/calm_down -a ${i}`);
             ls.stdout.on('data', function (data) {
                 console.log(data);
             });
@@ -91,7 +90,7 @@ class RoleCreate {
             Process(index);
         }
         await role.guild.channels.cache.get(channels.get("kde").value()).send(new Discord.MessageEmbed().setDescription(`${emojis.get("rol").value()} ${entry.executor} ${role.name} isimli rolü sildi.`));
-        await utils.set("ohal", true).write();
+        
     }
 }
 
