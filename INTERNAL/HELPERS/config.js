@@ -1,14 +1,17 @@
 module.exports = {
-	mongoDB: {
+    mongoDB: {
         auth: "admin",
         user: "Tantoony",
         name: "dbname"
     },
-	owner: "479293073549950997",
+    owner: "479293073549950997",
     server: "864473575792967690",
-	prefix: '.',
-    project: "asg",
+    prefix: '.',
     status: {
+        name: "💯 Asgard Kill Zone",
+        type: "LISTENING"
+    },
+    cdStatus: {
         name: "💯 Asgard Kill Zone",
         type: "LISTENING"
     },

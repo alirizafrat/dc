@@ -6,9 +6,9 @@ const client = new (require('./Tantoony'))({
 }, `CD_${process.argv.pop()}`);
 const Members = require("../MODELS/Datalake/backup_member");
 client.on('ready', async () => {
-    await client.user.setPresence(client.config.cdPresence);
+    await client.user.setPresence({status: client.config.cdStatus});
     const guild = client.guilds.cache.get(client.config.server);
-    const sayı = Math.floor(guild.members.cache.size / client.config.cdCount);
+    const sayı = Math.floor(guild.members.cache.size / client.config.vars.calm_down.length);
     const array = guild.members.cache.array().slice((sayı * process.argv.pop()), (sayı * (process.argv.pop() + 1)));
     let index = 0;
     setInterval(async () => {
