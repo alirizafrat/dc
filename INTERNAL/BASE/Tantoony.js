@@ -12,7 +12,7 @@ class Tantoony extends Client {
         this.extention = new EventEmitter();
         this.adapters = file => new FileSync(`../../BASE/_${file}.json`);
         this.mongoLogin();
-        this.login(process.env[require("../BASE/config.json")[name]])
+        this.login(process.env[require("../BASE/config.json")[name]]);
         this.responders = new Collection();
 
         this.cmdCoodown = new Object();

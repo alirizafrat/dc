@@ -11,6 +11,8 @@ class Initialize {
     }
 
     async loader() {
+        this.client.on("error", (e) => client.logger.log(e, "error"));
+        this.client.on("warn", (info) => client.logger.log(info, "warn"));
         const elements = await readdir(__dirname + `/../BOTS/${this.client.name}/Events/`);
         this.client.logger.log(`Loading ${elements.length} events in ${this.client.name}...`, "category");
         elements.forEach(async (element) => {
