@@ -1,5 +1,5 @@
 const Tantoony = require('../../BASE/Tantoony');
-const { Intents, Permissions } = require('discord.js');
+const { Intents } = require('discord.js');
 const client = new Tantoony({
     ws: {
         intents: new Intents(Intents.ALL).remove([

@@ -15,6 +15,7 @@ class Tantoony extends Client {
         this.login(process.env[require("../BASE/config.json")[name]])
         this.responders = new Collection();
 
+        this.cmdCoodown = new Object();
         this.leaves = new Map();
         this.deleteChnl = new Map();
         this.invites = new Object();
