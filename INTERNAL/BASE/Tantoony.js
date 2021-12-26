@@ -31,7 +31,7 @@ class Tantoony extends Client {
     };
 
     mongoLogin() {
-        require('mongoose').connect(`mongodb://${process.env.ipadress}:${process.env.port || 27017}`, {
+        require('mongoose').connect(`mongodb://${process.env[this.config.mongoDB.env_key]}:${this.config.mongoDB.port}`, {
             user: this.config.mongoDB.user,
             pass: process.env.mongoDB,
             dbName: this.config.mongoDB.name,

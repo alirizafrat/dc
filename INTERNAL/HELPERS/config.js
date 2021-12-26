@@ -2,7 +2,9 @@ module.exports = {
     mongoDB: {
         auth: "admin",
         user: "Tantoony",
-        name: "dbname"
+        name: "dbname",
+        env_key: "asdasdasd",
+        port: 27017
     },
     owner: "479293073549950997",
     server: "864473575792967690",
@@ -26,7 +28,6 @@ module.exports = {
         Guard_5: "XXXXXXXXXXXXXXXXXXXXXXXXXX",
         Registry: "XXXXXXXXXXXXXXXXXXXXXXXXXX",
         Moderator: "XXXXXXXXXXXXXXXXXXXXXXXXXX",
-        Logger: "XXXXXXXXXXXXXXXXXXXXXXXXXX",
         SES: [
             "XXXXXXXXXXXXXXXXXXXXXXXXXX",
             "XXXXXXXXXXXXXXXXXXXXXXXXXX",
@@ -47,7 +48,6 @@ module.exports = {
             "XXXXXXXXXXXXXXXXXXXXXXXXXX",
             "XXXXXXXXXXXXXXXXXXXXXXXXXX",
             "XXXXXXXXXXXXXXXXXXXXXXXXXX"
-        ],
-        mongoDB: "XXXXXXXXXXXXXXXXXXXXX"
+        ]
     }
 }
