@@ -1,27 +1,18 @@
-const Discord = require("discord.js");
-const client = new Discord.Client();
-const tokens = require('../../BASE/config.json');
-client.login(tokens.CD1);
-const mongoose = require('mongoose');
-mongoose.connect(tokens.mongoDB, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useFindAndModify: false
-});
-const Members = require("../../MODELS/Datalake/MemberRoles");
+module.exports = (number) => {
+const client = new (require('../../BASE/Tantoony'))({
+    fetchAllMembers: true
+}, number);
+require('dotenv').config({ path: __dirname + '/../../../.env' });
+client.login(process.env.cd1);
+client.handler.mongoLogin();
+const Members = require("../../MODELS/Datalake//backup_member");
 function sleep(ms) { return new Promise((resolve) => setTimeout(resolve, ms)) };
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
 const settings = require('../../HELPERS/config');
 client.on('ready', async () => {
-    await client.user.setPresence({
-        status: "idle",
-        activity: {
-            name: "a̵̓̆k̴͗̀ı̵̎͜l̵̀͘ ̸̈́̅s̴̼͗a̶̍͛ğ̸̉͝l̴̛̞ı̶̡̓ğ̵͋͋ı̶͊̌n̸̑̊ı̶̽͌ ̵̀͠k̴̆͘a̶̎͒y̵͊̇b̵̠̿ḛ̷̌ẗ̷̙́",
-            type: "WATCHING"
-        }
-    });
     const utiller = low(new FileSync('./../../BASE/_utils.json')).value();
+    await client.user.setPresence(utiller.cdPresence);
     const guild = client.guilds.cache.get(settings.server);
     const sayı = Math.floor(guild.members.cache.size / utiller.CdSize);
     const array = guild.members.cache.array().slice((sayı * 0), (sayı * 1));
@@ -45,3 +36,4 @@ client.on('ready', async () => {
     }
 });
 client.on("error", (err) => { console.error(err); });
+}

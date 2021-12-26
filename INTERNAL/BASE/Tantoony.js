@@ -5,11 +5,11 @@ require('dotenv').config({ path: __dirname + '/.env' });
 class Tantoony extends Client {
     constructor(options, name) {
         super(options);
-        this.name = name;
         this.config = require('../HELPERS/config');
         this.logger = require("../HELPERS/logger");
         this.functions = require("../HELPERS/functions");
         this.extention = new EventEmitter();
+        this.name = name.startsWith('CD') ? this.config.vars.calm_down[name.split('_').pop()] : this.config.vars[name];
         this.adapters = file => new FileSync(`../../BASE/_${file}.json`);
         this.mongoLogin();
         this.login(process.env[this.config.vars[name]]);
