@@ -11,40 +11,31 @@ class Initialize {
     }
 
     async loader() {
-        const evtFiles = subdir ? await readdir(dirname + filePath + `/${subdir}/`) : await readdir(dirname + filePath + '/');
-        this.client.logger.log(`Loading a total of ${evtFiles.length} events.`, "category");
-        if (!subdir) subdir = 'common';
-        evtFiles.forEach((file) => {
-            const eventName = file.split(".")[0];
-            this.client.logger.log(`Loading Event: ${eventName}`, "load");
-            const event = subdir !== 'common' ? new (require(dirname + filePath + `/${subdir}/${file}`))(this.client) : new (require(dirname + filePath + `/${file}`))(this.client);
-            if (subdir === 'common') {
-                this.client.extention.on(eventName, (...args) => event.run(...args));
-                delete require.cache[require.resolve(dirname + filePath + `/${file}`)];
+        const elements = await readdir(__dirname + `/../BOTS/${this.client.name}/Events/`);
+        this.client.logger.log(`Loading ${elements.length} events in ${this.client.name}...`, "category");
+        elements.forEach(async (element) => {
+            if (element.endsWith(".js")) {
+                this.client.logger.log(`Loading Event: ${element.split(".")[0]}`, "load");
+                const event = new (require(__dirname + `/../BOTS/${this.client.name}/Events/${element}`))(this.client);
+                this.client.on(element.split(".")[0], (...args) => event.run(...args));
+                delete require.cache[require.resolve(__dirname + `/../BOTS/${this.client.name}/Events/${element}`)];
             } else {
-                if (subdir === 'slash-events') creator.on(eventName, (...args) => event.run(...args));
-                if (subdir === 'client-events') this.client.on(eventName, (...args) => event.run(...args));
-                delete require.cache[require.resolve(dirname + filePath + `/${subdir}/${file}`)];
+                const detaileds = await readdir(__dirname + `/../BOTS/${this.client.name}/Events/${element}/`);
+                this.client.logger.log(`Loading ${detaileds.length} details of the event ${element} in ${this.client.name}...`, "category");
+                detaileds.forEach((detail) => {
+                    this.client.logger.log(`Loading Event: ${detail.split(".")[0]}`, "load");
+                    const event = new (require(__dirname + `/../BOTS/${this.client.name}/Events/${element}/${detail}`))(this.client);
+                    this.client.on(element.split(".")[0], (...args) => event.run(...args));
+                    delete require.cache[require.resolve(__dirname + `/../BOTS/${this.client.name}/Events/${element}/${detail}`)];
+                });
             }
-        })
-    };
+        });
+    }
 
-    async softEvents(filePath, dirname) {
-        const evtFiles = await readdir(dirname + filePath + "/");
-        this.client.logger.log(`Loading a total of ${evtFiles.length} events.`, "category");
-        evtFiles.forEach((file) => {
-            const eventName = file.split(".")[0];
-            this.client.logger.log(`Loading Event: ${eventName}`, "load");
-            const event = new (require(dirname + filePath + `/${file}`))(this.client);
-            this.client.on(eventName, (...args) => event.run(...args));
-            delete require.cache[require.resolve(dirname + filePath + `/${file}`)];
-        })
-    };
-
-    async app_cmd(dirname) {
-        const appFolders = await readdir(dirname + "app/");
+    async app_cmd() {
+        const appFolders = await readdir(__dirname + `/../BOTS/${this.client.name}/app/`);
         appFolders.forEach(async (intType) => {
-            readdir(`${dirname}app/${intType}/`).then((raw_output) => {
+            readdir(__dirname + `/../BOTS/${this.client.name}/app/${intType}/`).then((raw_output) => {
                 raw_output.filter((s) => s.endsWith('.js')).map(s => s.slice(0, s.length - ".js".length)).forEach((output) => {
                     const response = this.client.load_int(output, intType);
                     if (response) {
@@ -52,8 +43,7 @@ class Initialize {
                     }
                 });
             });
-
-        })
+        });
     }
 
     async project_events() {
@@ -63,23 +53,8 @@ class Initialize {
             const event = new (require(__dirname + "/../EVENTS/" + file))(this.client);
             this.client.extention.on(eventName, (...args) => event.run(...args));
             delete require.cache[require.resolve(__dirname + "/../EVENTS/" + file)];
-        })
-    }
-
-    async hardEvents(filePath, dirname) {
-        let eventFolders = await readdir(dirname + filePath + "/");
-        this.client.logger.log(`Loading a total of ${eventFolders.length} categories.`, "category");
-        eventFolders.filter(dir => dir !== 'other').forEach(async (dir) => {
-            let events = await readdir(dirname + filePath + "/" + dir + "/");
-            events.filter((evnt) => evnt.split(".").pop() === "js").forEach((file) => {
-                this.client.logger.log("loading event: " + file, "load");
-                const event = new (require(`${dirname}/${filePath}/${dir}/${file}`))(this.client);
-                this.client.on(dir, (...args) => event.run(...args));
-                delete require.cache[require.resolve(`${dirname}/${filePath}/${dir}/${file}`)];
-            });
         });
     }
-
 
 }
 

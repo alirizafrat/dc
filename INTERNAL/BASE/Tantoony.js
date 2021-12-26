@@ -5,6 +5,7 @@ require('dotenv').config({ path: __dirname + '/../.env' });
 class Tantoony extends Client {
     constructor(options, name) {
         super(options);
+        this.name = name;
         this.asToken = require("../BASE/config.json")[name]
         this.config = require('../HELPERS/config');
         this.logger = require("../HELPERS/logger");
@@ -13,7 +14,6 @@ class Tantoony extends Client {
         this.adapters = file => new FileSync(`../../BASE/_${file}.json`);
         this.mongoLogin();
 
-        this.classes = require("./AppCmdClass");
         this.responders = new Collection();
 
         this.leaves = new Map();
@@ -75,8 +75,8 @@ class Tantoony extends Client {
 
     load_int(intName, intType) {
         try {
-            const props = new (require(`../BOTS/${this.asToken}/${intType}/${intName}`))(this);
-            this.logger.log(`Loading "${intType}" Integration: ${props.info.name} 👌`, "load");
+            const props = new (require(`../BOTS/${this.name}/${intType}/${intName}`))(this);
+            this.logger.log(`Loading "${intType}" Integration in ${this.name}: ${props.info.name} 👌`, "load");
             if (props.init) {
                 props.init(this);
             }
@@ -98,7 +98,7 @@ class Tantoony extends Client {
         if (ress.shutdown) {
             await ress.shutdown(this);
         }
-        delete require.cache[require.resolve(`../BOTS/${this.asToken}/${intType}/${intName}.js`)];
+        delete require.cache[require.resolve(`../BOTS/${this.name}/${intType}/${intName}.js`)];
         return false;
     }
 
