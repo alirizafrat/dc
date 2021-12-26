@@ -1,12 +1,15 @@
 module.exports = {
-	mongoDB: "mongodb://localhost/Hub",
-	owner: "674565119161794560",
-    server: "795403348411940914",
+	mongoDB: "Asgard",
+    auth: "admin",
+    username: "Tantoony",
+	owner: "479293073549950997",
+    server: "864473575792967690",
 	prefix: '.',
-    project: "HUB",
+    project: "asg",
     status: {
-        name: "ZİH̨̢̀İ͚̹Ņ͟͝SE͎͔̪L̖ ̅̏̃҉SO̅RU̿͂ͣǸ̅̏ ͋̅͊Y̷̸͟Aͯ̋̈RDIͫ̄͠M̄̃̏ ͑ͪͬE̒̎ͫDİͥ̌͑N",
+        name: "💯 Asgard Kill Zone",
         type: "LISTENING"
     },
-    tag: null
+    tag: ['⁂'],
+    dis: '1933'
 }

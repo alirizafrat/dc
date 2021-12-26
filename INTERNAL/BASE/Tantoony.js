@@ -1,6 +1,7 @@
 const { Client, Collection } = require('discord.js');
 const FileSync = require('lowdb/adapters/FileSync');
-const events = require('events');
+const { EventEmitter } = require('events');
+require('dotenv').config({ path: __dirname + '/../.env' });
 class Tantoony extends Client {
     constructor(options, name) {
         super(options);
@@ -8,13 +9,12 @@ class Tantoony extends Client {
         this.config = require('../HELPERS/config');
         this.logger = require("../HELPERS/logger");
         this.functions = require("../HELPERS/functions");
+        this.extention = new EventEmitter();
         this.adapters = file => new FileSync(`../../BASE/_${file}.json`);
-        
-        this.models = new Collection();
-        this.commands = new Collection();
-        this.aliases = new Collection();
-        this.cmdCoodown = new Object();
-        this.buttons = new Collection();
+        this.mongoLogin();
+
+        this.classes = require("./AppCmdClass");
+        this.responders = new Collection();
 
         this.leaves = new Map();
         this.deleteChnl = new Map();
@@ -28,8 +28,20 @@ class Tantoony extends Client {
         this.voicecutLimit = new Object();
 
         this.handler = new (require('../HELPERS/initialize'))(this);
-        this.extention = new events.EventEmitter();
     };
+
+    mongoLogin() {
+        require('mongoose').connect(`mongodb://${process.env.ipadress}:${process.env.port}`, {
+            user: this.client.config.username,
+            pass: process.env.mongoDB,
+            dbName: this.client.config.mongoDB,
+            authSource: this.client.config.auth
+        }).then(() => {
+            this.client.logger.log("Connected to the Mongodb database.", "mngdb");
+        }).catch((err) => {
+            this.client.logger.log("Unable to connect to the Mongodb database. Error: " + err, "error");
+        });
+    }
 
     getPath(obj, value, path) {
 
@@ -61,103 +73,35 @@ class Tantoony extends Client {
         };
     }
 
-    async loadSlash(dirname, cmd, creator) {
+    load_int(intName, intType) {
         try {
-            if (!creator.commands.has('global:' + cmd.split('.')[0])) {
-                this.logger.log(`Loading Command: ${cmd}. 🔗`, "load");
-                await creator.registerCommand(require(`../BOTS/Moderator/Commands/slash-commands/${dirname}/${cmd}`));
-                await creator.syncCommands({
-                    deleteCommands: true,
-                    skipGuildErrors: false,
-                    syncGuilds: true,
-                    syncPermissions: true
-                });
-            } else {
-                await creator.unregisterCommand(require(`../BOTS/Moderator/Commands/slash-commands/${dirname}/${cmd}`));
-                await creator.syncCommands({
-                    deleteCommands: true,
-                    skipGuildErrors: false,
-                    syncGuilds: true,
-                    syncPermissions: true
-                });
-                this.logger.log(`Loading Command: ${cmd}. ⌛`, "load");
-                await creator.registerCommand(require(`../BOTS/Moderator/Commands/slash-commands/${dirname}/${cmd}`));
-                await creator.syncCommands({
-                    deleteCommands: true,
-                    skipGuildErrors: false,
-                    syncGuilds: true,
-                    syncPermissions: true
-                });
-            }
-            return false;
-        } catch (e) {
-            return `Unable to load command ${cmd}: ${e}`;
-        }
-    }
-
-    loadCommand(commandPath, commandName) {
-        try {
-            const props = new (require(`../BOTS/Moderator/${commandPath}/${commandName}`))(this);
-            this.logger.log(`Loading Command: ${props.info.name}. 👌`, "load");
-            props.config.location = commandPath;
+            const props = new (require(`../BOTS/${this.asToken}/${intType}/${intName}`))(this);
+            this.logger.log(`Loading "${intType}" Integration: ${props.info.name} 👌`, "load");
             if (props.init) {
                 props.init(this);
             }
-            this.commands.set(props.info.name, props);
-            props.info.aliases.forEach((alias) => {
-                this.aliases.set(alias, props.info.name);
-            });
+            this.responders.set(`${intType}:${props.info.name}`, props);
             return false;
         } catch (e) {
-            return `Unable to load command ${commandName}: ${e}`;
+            return `Unable to load "${intType}" Integration ${intName}: ${e}`;
         }
     }
 
-    async unloadCommand(commandPath, commandName) {
-        let command;
-        if (this.commands.has(commandName)) {
-            command = this.commands.get(commandName);
-        } else if (this.aliases.has(commandName)) {
-            command = this.commands.get(this.aliases.get(commandName));
+    async unload_int(intName, intType) {
+        let ress;
+        if (this.responders.has(intType + ":" + intName)) {
+            ress = this.responders.get(intType + ":" + intName);
         }
-        if (!command) {
-            return `The command \`${commandName}\` doesn't seem to exist, nor is it an alias. Try again!`;
+        if (!ress) {
+            return `The command \`${intName}\` doesn't seem to exist, nor is it an alias. Try again!`;
         }
-        if (command.shutdown) {
-            await command.shutdown(this);
+        if (ress.shutdown) {
+            await ress.shutdown(this);
         }
-        delete require.cache[require.resolve(`../BOTS/Moderator/${commandPath}/${commandName}.js`)];
+        delete require.cache[require.resolve(`../BOTS/${this.asToken}/${intType}/${intName}.js`)];
         return false;
     }
 
-    loadButton(commandPath, commandName) {
-        try {
-            const props = new (require(`../BOTS/Moderator/${commandPath}/${commandName}`))(this);
-            this.logger.log(`Loading Button: ${props.info.name}. 👌`, "load");
-            props.config.location = commandPath;
-            if (props.init) {
-                props.init(this);
-            }
-            this.buttons.set(props.info.name, props);
-            return false;
-        } catch (e) {
-            return `Unable to load button ${commandName}: ${e}`;
-        }
-    }
 
-    async unloadButton(commandPath, commandName) {
-        let command;
-        if (this.buttons.has(commandName)) {
-            command = this.buttons.get(commandName);
-        }
-        if (!command) {
-            return `The button \`${commandName}\` doesn't seem to exist, nor is it an alias. Try again!`;
-        }
-        if (command.shutdown) {
-            await command.shutdown(this);
-        }
-        delete require.cache[require.resolve(`../BOTS/Moderator/${commandPath}/${commandName}.js`)];
-        return false;
-    }
 }
 module.exports = Tantoony;

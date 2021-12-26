@@ -5,9 +5,12 @@ const readdir = util.promisify(fs.readdir);
 class Initialize {
     constructor(client) {
         this.client = client;
+        this.project_events();
+        this.loader();
+        this.app_cmd();
     }
 
-    async events(filePath, dirname, subdir, creator) {
+    async loader() {
         const evtFiles = subdir ? await readdir(dirname + filePath + `/${subdir}/`) : await readdir(dirname + filePath + '/');
         this.client.logger.log(`Loading a total of ${evtFiles.length} events.`, "category");
         if (!subdir) subdir = 'common';
@@ -38,6 +41,31 @@ class Initialize {
         })
     };
 
+    async app_cmd(dirname) {
+        const appFolders = await readdir(dirname + "app/");
+        appFolders.forEach(async (intType) => {
+            readdir(`${dirname}app/${intType}/`).then((raw_output) => {
+                raw_output.filter((s) => s.endsWith('.js')).map(s => s.slice(0, s.length - ".js".length)).forEach((output) => {
+                    const response = this.client.load_int(output, intType);
+                    if (response) {
+                        this.client.logger.log(response, "error");
+                    }
+                });
+            });
+
+        })
+    }
+
+    async project_events() {
+        let raw_events = await readdir(__dirname + '/../EVENTS/');
+        raw_events.forEach((file) => {
+            this.client.logger.log("loading event: " + file, "load");
+            const event = new (require(__dirname + "/../EVENTS/" + file))(this.client);
+            this.client.extention.on(eventName, (...args) => event.run(...args));
+            delete require.cache[require.resolve(__dirname + "/../EVENTS/" + file)];
+        })
+    }
+
     async hardEvents(filePath, dirname) {
         let eventFolders = await readdir(dirname + filePath + "/");
         this.client.logger.log(`Loading a total of ${eventFolders.length} categories.`, "category");
@@ -52,53 +80,6 @@ class Initialize {
         });
     }
 
-    async dotCommands(path) {
-        let directories = await readdir(path);
-        this.client.logger.log(`Loading a total of ${directories.length} categories.`, "category");
-        await directories.forEach((dir) => {
-            readdir(path + dir + "/").then((commands) => {
-                commands.filter((cmd) => cmd.split(".").pop() === "js").forEach((cmd) => {
-                    const response = this.client.loadCommand(path + dir, cmd);
-                    if (response) {
-                        this.client.logger.log(response, "error");
-                    }
-                });
-            });
-        });
-    };
-    
-    async buttons(path) {
-        let directories = await readdir(path);
-        this.client.logger.log(`Loading a total of ${directories.length} categories.`, "category");
-        await directories.forEach((dir) => {
-            readdir(path + dir + "/").then((buttons) => {
-                buttons.filter((btn) => btn.split(".").pop() === "js").forEach((btn) => {
-                    const response = this.client.loadButton(path + dir, btn);
-                    if (response) {
-                        this.client.logger.log(response, "error");
-                    }
-                });
-            });
-        });
-    };
-
-    mongoLogin() {
-        require('mongoose').connect(`mongodb://${process.env.ipadress}:27017`, {
-            auth: {
-                user: this.client.config.username,
-                password: process.env.mongoDB
-            },
-            dbName: this.client.config.mongoDB,
-            authSource: this.client.config.auth,
-            useNewUrlParser: true,
-            useUnifiedTopology: true,
-            useFindAndModify: false
-        }).then(() => {
-            this.client.logger.log("Connected to the Mongodb database.", "mngdb");
-        }).catch((err) => {
-            this.client.logger.log("Unable to connect to the Mongodb database. Error: " + err, "error");
-        });
-    }
 
 }
 
