@@ -1,7 +1,7 @@
 const { Client, Collection } = require('discord.js');
 const FileSync = require('lowdb/adapters/FileSync');
 const { EventEmitter } = require('events');
-require('dotenv').config({ path: __dirname + '/../.env' });
+require('dotenv').config({ path: __dirname + '/.env' });
 class Tantoony extends Client {
     constructor(options, name) {
         super(options);
