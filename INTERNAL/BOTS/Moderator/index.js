@@ -1,4 +1,3 @@
-const config = require('../../BASE/config.json');
 const Tantoony = require('./Base/Tantoony');
 const { Intents } = require('discord.js');
 const client = new Tantoony({
@@ -21,28 +20,7 @@ const client = new Tantoony({
             "DIRECT_MESSAGE_TYPING"
         ])
     }
-}, "moderator");
-client.login(process.env[client.asToken]);
-client.handler.mongoLogin();
-const fs = require('fs');
-const util = require('util');
-const readdir = util.promisify(fs.readdir);
-const init = async () => {
-    let directories = await readdir("./Commands/");
-    client.logger.log(`Loading a total of ${directories.length} categories.`, "category");
-    directories.forEach(async (dir) => {
-        let commands = await readdir("./Commands/" + dir + "/");
-        commands.filter((cmd) => cmd.split(".").pop() === "js").forEach(async (cmd) => {
-            const response = client.loadCommand("./Commands/" + dir, cmd);
-            if (response) {
-                client.logger.log(response, "error");
-            }
-        });
-    });
-};
-init();
-client.handler.prototype.events(client, '/Events', __dirname);
-client.handler.prototype.server(client, '/../../EVENTS', __dirname);
+}, __dirname.split('\\').pop());
 client.on("guildUnavailable", async (guild) => { console.log(`[UNAVAIBLE]: ${guild.name}`) })
     .on("disconnect", () => client.logger.log("Bot is disconnecting...", "disconnecting"))
     .on("reconnecting", () => client.logger.log("Bot reconnecting...", "reconnecting"))

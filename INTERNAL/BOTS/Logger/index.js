@@ -1,4 +1,3 @@
-const config = require('../../BASE/config.json');
 const Tantoony = require('../../BASE/Tantoony');
 const { Intents, Permissions } = require('discord.js');
 const client = new Tantoony({
@@ -21,11 +20,7 @@ const client = new Tantoony({
             "DIRECT_MESSAGE_TYPING"
         ])
     }
-}, "logger");
-client.login(process.env[client.asToken]);
-client.handler.mongoLogin();
-client.handler.prototype.events(client, '/Events', __dirname);
-client.handler.prototype.server(client, '/../../EVENTS', __dirname);
+}, __dirname.split('\\').pop());
 client.on("guildUnavailable", async (guild) => { console.log(`[UNAVAIBLE]: ${guild.name}`) })
     .on("disconnect", () => client.logger.log("Bot is disconnecting...", "disconnecting"))
     .on("reconnecting", () => client.logger.log("Bot reconnecting...", "reconnecting"))

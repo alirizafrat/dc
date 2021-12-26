@@ -6,14 +6,13 @@ class Tantoony extends Client {
     constructor(options, name) {
         super(options);
         this.name = name;
-        this.asToken = require("../BASE/config.json")[name]
         this.config = require('../HELPERS/config');
         this.logger = require("../HELPERS/logger");
         this.functions = require("../HELPERS/functions");
         this.extention = new EventEmitter();
         this.adapters = file => new FileSync(`../../BASE/_${file}.json`);
         this.mongoLogin();
-
+        this.login(process.env[require("../BASE/config.json")[name]])
         this.responders = new Collection();
 
         this.leaves = new Map();
@@ -32,14 +31,14 @@ class Tantoony extends Client {
 
     mongoLogin() {
         require('mongoose').connect(`mongodb://${process.env.ipadress}:${process.env.port}`, {
-            user: this.client.config.username,
+            user: this.config.username,
             pass: process.env.mongoDB,
-            dbName: this.client.config.mongoDB,
-            authSource: this.client.config.auth
+            dbName: this.config.mongoDB,
+            authSource: this.config.auth
         }).then(() => {
-            this.client.logger.log("Connected to the Mongodb database.", "mngdb");
+            this.logger.log("Connected to the Mongodb database.", "mngdb");
         }).catch((err) => {
-            this.client.logger.log("Unable to connect to the Mongodb database. Error: " + err, "error");
+            this.logger.log("Unable to connect to the Mongodb database. Error: " + err, "error");
         });
     }
 

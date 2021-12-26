@@ -1,4 +1,3 @@
-const config = require('../../BASE/config.json');
 const Tantoony = require('../../BASE/Tantoony');
 const { Intents } = require('discord.js');
 const client = new Tantoony({
@@ -6,11 +5,7 @@ const client = new Tantoony({
         Intents.FLAGS.GUILDS,
         Intents.FLAGS.GUILD_PRESENCES
     ]
-}, "guard_1");
-client.login(process.env[client.asToken]);
-client.handler.mongoLogin();
-client.handler.prototype.events(client, '/Events', __dirname);
-client.handler.prototype.server(client, '/../../EVENTS', __dirname);
+}, __dirname.split('\\').pop());
 client.on("guildUnavailable", async (guild) => {
     console.log(`[UNAVAIBLE]: ${guild.name}`)
 })

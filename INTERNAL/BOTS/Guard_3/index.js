@@ -1,4 +1,3 @@
-const config = require('../../BASE/config.json');
 const Tantoony = require('../../BASE/Tantoony');
 const { Intents } = require('discord.js');
 const client = new Tantoony({
@@ -8,12 +7,7 @@ const client = new Tantoony({
         Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
         Intents.FLAGS.GUILD_BANS
     ]
-}, "guard_3");
-client.login(process.env[client.asToken]);
-client.handler.mongoLogin();
-client.handler.prototype.events(client, '/Events', __dirname);
-client.handler.prototype.server(client, '/../../EVENTS', __dirname);
-client.extention.on('scream', () => console.log('Is there anybody out there?'));
+}, __dirname.split('\\').pop());
 client.on("guildUnavailable", async (guild) => { console.log(`[UNAVAIBLE]: ${guild.name}`) })
     .on("disconnect", () => client.logger.log("Bot is disconnecting...", "disconnecting"))
     .on("reconnecting", () => client.logger.log("Bot reconnecting...", "reconnecting"))
