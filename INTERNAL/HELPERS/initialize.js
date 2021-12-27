@@ -57,7 +57,7 @@ class Initialize {
 
     async project_events() {
         let raw_events = await readdir(__dirname + '/../EVENTS/');
-        raw_events.forEach((file) => {
+        raw_events.filter((e) => e.endsWith('.js')).forEach((file) => {
             this.client.logger.log("loading event: " + file, "load");
             const event = new (require(__dirname + "/../EVENTS/" + file))(this.client);
             this.client.extention.on(file.split(".")[0], (...args) => event.run(...args));
