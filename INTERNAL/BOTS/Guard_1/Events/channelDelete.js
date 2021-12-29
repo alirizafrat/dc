@@ -1,11 +1,10 @@
-const Permissions = require("../../../MODELS/Temprorary/Permissions");
+const Permissions = require("../../../MODELS/Temprorary/permit");
 const low = require('lowdb');
 const { closeall } = require("../../../HELPERS/functions");
-const Discord = require('discord.js');
-const CatChannels = require("../../../MODELS/Datalake/CatChannels");
-const TextChannels = require("../../../MODELS/Datalake/TextChannels");
-const VoiceChannels = require("../../../MODELS/Datalake/VoiceChannels");
-const overwrites = require("../../../MODELS/Datalake/Overwrites");
+const TextChannels = require("../../../MODELS/Datalake/backup_text");
+const VoiceChannels = require('../../../MODELS/Datalake/backup_voice');
+const CatChannels = require('../../../MODELS/Datalake/backup_category');
+const overwrites = require("../../../MODELS/Datalake/backup_overwrite");
 class ChannelDelete {
     constructor(client) {
         this.client = client;
@@ -14,8 +13,6 @@ class ChannelDelete {
         const client = this.client;
         if (channel.guild.id !== client.config.server) return;
         const utils = await low(client.adapters('utils'));
-        const emojis = await low(client.adapters('emojis'));
-        const channels = await low(client.adapters('channels'));
         const entry = await channel.guild.fetchAuditLogs({ type: "CHANNEL_DELETE" }).then(logs => logs.entries.first());
         if (entry.createdTimestamp <= Date.now() - 5000) return;
         if (entry.executor.id === client.user.id) return;
@@ -26,7 +23,8 @@ class ChannelDelete {
             if (channel.type === 'voice') await VoiceChannels.deleteOne({ _id: channel.id });
             if (channel.type === 'category') await CatChannels.deleteOne({ _id: channel.id });
             await overwrites.deleteOne({ _id: channel.id });
-            return channel.guild.channels.cache.get(channels.get("backup").value()).send(`${emojis.get("kanal").value()} ${entry.executor} ${channel.name} isimli kanalı sildi. Kalan izin sayısı ${permission ? permission.count - 1 : "yok"}`);
+            client.extention.emit('Logger', 'Guard', entry.executor.id, "CHANNEL_DELETE", `${entry.executor.username} ${channel.name} isimli kanalı sildi. Kalan izin sayısı ${permission ? permission.count - 1 : "sınırsız"}`);
+            return;
         }
         if (permission) await Permissions.deleteOne({ user: entry.executor.id, type: "delete", effect: "channel" });
         await closeall(channel.guild, ["ADMINISTRATOR", "BAN_MEMBERS", "MANAGE_CHANNELS", "KICK_MEMBERS", "MANAGE_GUILD", "MANAGE_WEBHOOKS", "MANAGE_ROLES"]);
@@ -101,7 +99,7 @@ class ChannelDelete {
         await newData.save();
         const exeMember = channel.guild.members.cache.get(entry.executor.id);
         client.extention.emit('Jail', exeMember, client.user.id, "KDE - Kanal Silme", "Perma", 0);
-        await channel.guild.channels.cache.get(channels.get("kde").value()).send(new Discord.MessageEmbed().setColor('#2f3136').setDescription(`${emojis.get("kanal").value()} ${entry.executor} ${channel.name} isimli kanalı sildi.`));
+        client.extention.emit('Logger', 'KDE', entry.executor.id, "CHANNEL_DELETE", `${channel.name} isimli kanalı sildi`);
     }
 }
 module.exports = ChannelDelete;

@@ -1,6 +1,5 @@
-const Permissions = require('../../../MODELS/Temprorary/Permissions');
+const Permissions = require('../../../MODELS/Datalake/permit');
 const low = require('lowdb');
-const { MessageEmbed } = require('discord.js');
 
 class EmojiUpdate {
     constructor(client) {
@@ -12,9 +11,6 @@ class EmojiUpdate {
         if (curEmoji.guild.id !== client.config.server) return;
         const entry = await curEmoji.guild.fetchAuditLogs({ type: 'EMOJI_UPDATE' }).then(logs => logs.entries.first());
         const utils = await low(client.adapters('utils'));
-        const roles = await low(client.adapters('roles'));
-        const emojis = await low(client.adapters('emojis'));
-        const channels = await low(client.adapters('channels'));
         if (entry.createdTimestamp <= Date.now() - 5000) return;
         if (entry.executor.id === client.user.id) return;
         const permission = await Permissions.findOne({ user: entry.executor.id, type: "update", effect: "emoji" });
@@ -24,7 +20,8 @@ class EmojiUpdate {
                 type: "update",
                 effect: "emoji"
             }, { $inc: { count: -1 } });
-            return curEmoji.guild.channels.cache.get(channels.get("guard").value()).send(new MessageEmbed().setDescription(`${emojis.get("emoji").value()} ${entry.executor} ${oldEmoji.name} isimli emojiyi yeniledi. Kalan izin sayısı ${permission.count - 1}`));
+            client.extention.emit('Logger', 'Guard', entry.executor.id, "EMOJI_UPDATE", `${oldEmoji.name} isimli emojiyi yeniledi. Kalan izin sayısı ${permission ? permission.count - 1 : "sınırsız"}`);
+            return;
         }
         if (permission) await Permissions.deleteOne({ user: entry.executor.id, type: "update", effect: "emoji" });
         const emoji = await curEmoji.edit({
@@ -33,7 +30,7 @@ class EmojiUpdate {
         }, `${entry.executor.username} Tarafından değiştirilmeye çalışıldı`);
         const exeMember = curEmoji.guild.members.cache.get(entry.executor.id);
         client.extention.emit('Jail', exeMember, client.user.id, "KDE - Emoji Yenileme", "Perma", 0);
-        await emoji.guild.channels.cache.get(channels.get("kde").value()).send(new MessageEmbed().setDescription(`${emojis.get("emoji").value()} ${entry.executor} ${oldEmoji.name} isimli emojiyi yenilediği için PermaJail uygulandı.`));
+        client.extention.emit('Logger', 'KDE', entry.executor.id, "EMOJI_UPDATE", `${oldEmoji.name} isimli emojiyi yeniledi`);
 
     }
 }

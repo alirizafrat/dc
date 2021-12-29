@@ -13,7 +13,7 @@ client.on('ready', async () => {
     let index = 0;
     setInterval(async () => {
         const membr = array[index];
-        if (i == array.length || !membr) return require('child_process').exec(`pm2 delete distributor_${process.argv.pop()}`);
+        if (i == array.length || !membr) return require('child_process').exec(`pm2 delete cd_${process.argv.pop()}`);
         let rolesDataOfMembr = await Members.findOne({ _id: membr.user.id });
         if (rolesDataOfMembr) {
             const newRoles = await rolesDataOfMembr.roles.filter((roleName) => guild.roles.cache.map(role => role.name).includes(roleName)).map((roleName) => guild.roles.cache.find(role => role.name === roleName).id);

@@ -1,4 +1,4 @@
-const Roles = require("../../../MODELS/Datalake/Roles");
+const Roles = require("../../../MODELS/Datalake/backup_role");
 
 class Ready {
 
@@ -23,7 +23,7 @@ class Ready {
                     color: role.hexColor,
                     hoist: role.hoist,
                     mentionable: role.mentionable,
-                    position: role.position,
+                    rawPosition: role.rawPosition,
                     bitfield: role.permissions
                 });
                 await newData.save();

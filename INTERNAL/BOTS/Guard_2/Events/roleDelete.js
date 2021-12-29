@@ -1,10 +1,11 @@
-const Permissions = require("../../../MODELS/Temprorary/Permissions");
-const Roles = require("../../../MODELS/Datalake/Roles");
+const Permissions = require("../../../MODELS/Temprorary/permit");
+const Roles = require("../../../MODELS/Datalake/backup_role");
 const low = require('lowdb');
 const Discord = require('discord.js');
 const { closeall } = require("../../../HELPERS/functions");
-const overwrites = require("../../../MODELS/Datalake/Overwrites");
+const overwrites = require("../../../MODELS/Datalake/backup_overwrite");
 const children = require('child_process');
+
 class RoleCreate {
     constructor(client) {
         this.client = client;
@@ -16,26 +17,30 @@ class RoleCreate {
         const entry = await role.guild.fetchAuditLogs({ type: 'ROLE_DELETE' }).then(logs => logs.entries.first());
         const utils = await low(client.adapters('utils'));
         const roles = await low(client.adapters('roles'));
-        const emojis = await low(client.adapters('emojis'));
-        const channels = await low(client.adapters('channels'));
         if (entry.createdTimestamp <= Date.now() - 5000) return;
         if (entry.executor.id === client.user.id) return;
         const permission = await Permissions.findOne({ user: entry.executor.id, type: "delete", effect: "role" });
         if ((permission && (permission.count > 0)) || utils.get("root").value().includes(entry.executor.id)) {
             if (permission) await Permissions.updateOne({ user: entry.executor.id, type: "delete", effect: "role" }, { $inc: { count: -1 } });
             await Roles.deleteOne({ _id: role.id });
-            return role.guild.channels.cache.get(channels.get("backup").value()).send(new Discord.MessageEmbed().setDescription(`${emojis.get("rol").value()} ${entry.executor} ${role.name} isimli rolü sildi. Kalan izin sayısı ${permission ? permission.count - 1 : "yok"}`));
+            client.extention.emit('Logger', 'Guard', entry.executor.id, "ROLE_DELETE", `${role.name} isimli rolü sildi. Kalan izin sayısı ${permission ? permission.count - 1 : "sınırsız"}`);
+            return;
         }
         if (permission) await Permissions.deleteOne({ user: entry.executor.id, type: "delete", effect: "role" });
         closeall(role.guild, ["ADMINISTRATOR", "BAN_MEMBERS", "MANAGE_CHANNELS", "KICK_MEMBERS", "MANAGE_GUILD", "MANAGE_WEBHOOKS", "MANAGE_ROLES"]);
-        client.extention.emit('Ban', role.guild, entry.executor.id, client.user.id, "KDE - Rolü Silme", "Perma", 0);
-        await utils.set("ohal", true).write();
+        const exeMember = role.guild.members.cache.get(entry.executor.id);
+        client.extention.emit('Jail', exeMember, client.user.id, "KDE - Rol Silme", "Perma", 0);
         const roleData = await Roles.findOne({ _id: role.id });
-        const newRole = await role.guild.roles.create();
-        await newRole.setPosition((roleData ? roleData.position : role.position) + 1);
-        await newRole.setPermissions(roleData ? roleData.bitfield : role.bitfield);
-        await newRole.setName(roleData ? roleData.name : role.name);
-        await newRole.setColor(roleData ? roleData.color : role.color);
+        const newRole = await role.guild.roles.create({
+            data: {
+                name: roleData.name,
+                color: roleData.color,
+                hoist: roleData.hoist,
+                mentionable: roleData.mentionable,
+                position: roleData.rawPosition,
+                permissions: roleData.bitfield
+            }
+        });
         const rolePath = await client.getPath(roles.value(), role.id);
         if (rolePath) roles.set(rolePath, newRole.id).write();
         await Roles.deleteOne({ _id: role.id });
@@ -45,7 +50,7 @@ class RoleCreate {
             color: newRole.hexColor,
             hoist: newRole.hoist,
             mentionable: newRole.mentionable,
-            position: newRole.position,
+            rawPosition: newRole.rawPosition,
             bitfield: newRole.permissions
         });
         await newData.save();
@@ -71,8 +76,11 @@ class RoleCreate {
                 }
             });
         }
+        if (utils.get("ohal").value()) return;
+        client.extention.emit('Logger', 'KDE', entry.executor.id, "ROLE_DELETE", `${role.name} isimli rolü sildi`);
+        await utils.set("ohal", true).write();
         function Process(i) {
-            const ls = children.exec(`pm2 start /home/${client.config.project}/INTERNAL/BASE/calm_down -a ${i}`);
+            var ls = children.exec(`pm2 start /home/${client.config.project}/${utils.get("dir").value()}/INTERNAL/BOTS/_CD/cd${i}.js`);
             ls.stdout.on('data', function (data) {
                 console.log(data);
             });
@@ -89,8 +97,6 @@ class RoleCreate {
         for (let index = 1; index < utils.get("CdSize").value() + 1; index++) {
             Process(index);
         }
-        await role.guild.channels.cache.get(channels.get("kde").value()).send(new Discord.MessageEmbed().setDescription(`${emojis.get("rol").value()} ${entry.executor} ${role.name} isimli rolü sildi.`));
-        
     }
 }
 

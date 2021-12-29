@@ -14,10 +14,10 @@ class Ready {
         const utiller = await low(this.client.adapters('utils'));
         const guild = client.guilds.cache.get(client.config.server);
         client.logger.log(`${client.user.tag}, ${client.users.cache.size} kişi için hizmet vermeye hazır!`, "ready");
-        await client.user.setPresence({ activity: client.config.status, status: "idle" });
+        client.user.setPresence({ activities: [client.config.status], status: "idle" });
         client.owner = client.users.cache.get(client.config.owner);
         await wait(1000);
-        await guild.fetchInvites().then(guildInvites => { client.invites[guild.id] = guildInvites });
+        await guild.invites.fetch().then(guildInvites => { client.invites[member.guild.id] = guildInvites.cache.array() });
         if (guild.vanityURLCode) {
             await guild.fetchVanityData().then(async (res) => {
                 utiller.update("vanityUses", n => res.uses).write();
@@ -35,7 +35,7 @@ class Ready {
                     await this.client.logger.log(` [ROL BULUNDU] : ${mem.user.username} => ${rol.name}`, "mngdb");
                 });
                 try {
-                    let sex = new Memberz({ _id: id, roles: sexiboyz});
+                    let sex = new Memberz({ _id: id, roles: sexiboyz });
                     await sex.save();
                     await this.client.logger.log(` [KİTAPLIĞA EKLENDİ] : ${mem.user.username}`, "mngdb");
                 } catch (error) {

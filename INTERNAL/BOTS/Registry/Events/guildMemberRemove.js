@@ -33,7 +33,6 @@ class GuildMemberRemove {
             await member.guild.channels.cache.get(channels.get("guard").value()).send(embedtrue.setColor("#RED"));
             return;
         }
-        await member.guild.channels.cache.get(channels.get("registry").value()).send(embed.setDescription(`${emojis.get("exit").value()} **${member.user.username}** Adlı Kullanıcı Sunucudan Çıkış Yaptı.`));
     }
 }
 module.exports = GuildMemberRemove;

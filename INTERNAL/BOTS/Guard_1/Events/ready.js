@@ -1,7 +1,7 @@
-const CatChannels = require("../../../MODELS/Datalake/CatChannels");
-const overwrites = require("../../../MODELS/Datalake/Overwrites");
-const TextChannels = require("../../../MODELS/Datalake/TextChannels");
-const VoiceChannels = require("../../../MODELS/Datalake/VoiceChannels");
+const overwrites = require("../../../MODELS/Datalake/backup_overwrite");
+const TextChannels = require("../../../MODELS/Datalake/backup_text");
+const VoiceChannels = require('../../../MODELS/Datalake/backup_voice');
+const CatChannels = require('../../../MODELS/Datalake/backup_category');
 class Ready {
 
     constructor(client) {

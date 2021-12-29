@@ -27,25 +27,21 @@ class GuildMemberAdd {
             } else {
                 await member.kick("Korundu");
                 const exeMember = member.guild.members.cache.get(entry.executor.id);
-                client.extention.emit("Ban", member.guild, exeMember, this.client.user.id, "KDE - Bot Ekleme", "Perma", 1);
+                client.extention.emit("Ban", member.guild, exeMember, this.client.user.id, "* Bot Ekleme", "Perma", 1);
             }
             return;
         }
         let davetci = {};
         let count = 0;
-        if (member.guild.vanityURLCode) {
-            let aNumber = 0;
-            await member.guild.fetchVanityData().then(data => { aNumber = data.uses }).catch(console.error);
-            if (utils.get("vanityUses").value() < aNumber) {
-                await member.guild.fetchVanityData().then(data => { utils.update("vanityUses", n => data.uses).write(); }).catch(console.error());
-                davetci = {
-                    username: "ÖZEL URL"
-                };
-            }
+        if (member.guild.vanityURLCode && (utils.get("vanityUses").value() < member.guild.vanityURLUses)) {
+            utils.update("vanityUses", n => vanityURLUses).write();
+            davetci = {
+                username: "ÖZEL URL"
+            };
         }
-        await member.guild.fetchInvites().then(async gInvites => {
+        await member.guild.invites.fetch().then(async gInvites => {
             const invData = client.invites[member.guild.id];
-            let invite = gInvites.find(inv => inv.uses > invData.get(inv.code).uses) || invData.find(i => !gInvites.has(i.code));
+            let invite = gInvites.cache.find(inv => inv.uses > invData.get(inv.code).uses) || invData.find(i => !gInvites.cache.has(i.code));
             if (invite) {
                 davetci = invite.inviter;
                 const obj = {
@@ -68,21 +64,15 @@ class GuildMemberAdd {
             }
         });
         let pointed = '•';
-        /*
-        if (member.user.username.includes(client.config.tag)) {
+        if (client.config.tag.some(t => member.user.username.includes(t))) {
             pointed = client.config.tag;
             await member.roles.add(roles.get("taglı").value());
         }
-        */
-        await member.guild.fetchInvites().then(guildInvites => { client.invites[member.guild.id] = guildInvites });
+        await member.guild.invites.fetch().then(guildInvites => { client.invites[member.guild.id] = guildInvites.cache.array() });
         if (utils.get("forbidden").value().some(tag => member.user.username.includes(tag))) {
             let registered = await regData.findOne({ _id: member.user.id });
             if (registered) await member.setNickname(`${pointed} ${registered.name}`);
             await member.roles.add([roles.get("forbidden").value(), roles.get("karantina").value()]);
-            const embedf = welcomeMsg(member, "Yasaklı Tagda");
-            await member.guild.channels.cache.get(channels.get("registry").value()).send(embedf);
-            const forbidMsg = `Aramıza katılman bizi onurlandırdı ${member} fakat ne yazık ki seni taşıdığın bir tagdan dolayı içeri alamayacağım.`;
-            return member.guild.channels.cache.get("forbidden").send(forbidMsg);
         }
         let pJail = await Jails.findOne({ _id: member.user.id });
         if (pJail) {
@@ -92,10 +82,6 @@ class GuildMemberAdd {
                 let registered = await regData.findOne({ _id: member.user.id });
                 if (registered) await member.setNickname(`${pointed} ${registered.name}`);
                 await member.roles.add([roles.get("prisoner").value(), roles.get("karantina").value()]);
-                const embedded = welcomeMsg(member, "Kalıcı Cezalı");
-                await member.guild.channels.cache.get(channels.get("registry").value()).send(embedded);
-                const forbidMsg = `Aramıza katılman bizi onurlandırdı ${member} fakat ne yazık ki seni cezalı olduğundan dolayı içeri alamayacağım.`;
-                return member.guild.channels.cache.get(channels.get("prisoner").value()).send(forbidMsg);
             }
         }
         let mute = await cmutes.findOne({ _id: member.user.id });
@@ -104,10 +90,6 @@ class GuildMemberAdd {
             let registered = await regData.findOne({ _id: member.user.id });
             if (registered) await member.setNickname(`${pointed} ${registered.name}`);
             await member.roles.add([roles.get("suspicious").value(), roles.get("karantina").value()]);
-            const embedded = welcomeMsg(member, "Şüpheli");
-            await member.guild.channels.cache.get(channels.get("registry").value()).send(embedded);
-            const forbidMsg = `Aramıza katılman bizi onurlandırdı ${member} fakat ne yazık ki hesabın çok yeni olduğundan dolayı içeri alamayacağım.`;
-            return member.guild.channels.cache.get("suspicious").send(forbidMsg);
         }
         let registered = await regData.findOne({ _id: member.user.id });
         if (registered) {
@@ -138,9 +120,6 @@ class GuildMemberAdd {
         `).setThumbnail(member.user.displayAvatarURL()).setImage('attachment://welcome.jpg').attachFiles(att);
 
         member.guild.channels.cache.get(channels.get("welcome").value()).send(embed);
-        //member.guild.channels.cache.get(channels.get("welcome").value()).send(`${yetkili}`).then(msg => msg.delete({ timeout: 200 }));
-        member.guild.channels.cache.get(channels.get("registry").value()).send(welcomeMsg(member, "İZİNLİ").setColor('#2e6b3f'));
-
     }
 }
 

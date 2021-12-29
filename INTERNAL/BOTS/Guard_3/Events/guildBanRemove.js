@@ -1,7 +1,6 @@
-const Permissions = require('../../../MODELS/Temprorary/Permissions');
-const Punishments = require('../../../MODELS/StatUses/Punishments');
+const Permissions = require('../../../MODELS/Temprorary/permit');
+const Punishments = require('../../../MODELS/StatUses/stat_crime');
 const low = require('lowdb');
-const { MessageEmbed } = require('discord.js');
 
 class GuildBanAdd {
     constructor(client) {
@@ -13,8 +12,6 @@ class GuildBanAdd {
         if (guild.id !== client.config.server) return;
         const entry = await guild.fetchAuditLogs({ type: 'MEMBER_BAN_REMOVE' }).then(logs => logs.entries.first());
         const utils = await low(client.adapters('utils'));
-        const emojis = await low(client.adapters('emojis'));
-        const channels = await low(client.adapters('channels'));
         if (entry.createdTimestamp <= Date.now() - 5000) return;
         if (entry.executor.id === client.user.id) return;
         if (entry.executor.bot) return;
@@ -37,13 +34,14 @@ class GuildBanAdd {
                 await record.save();
             }
             await Punishments.updateOne({ _id: user.id }, { $push: { records: peer } });
-            return guild.channels.cache.get(channels.get("guard").value()).send(new MessageEmbed().setDescription(`${emojis.get("ban").value()} ${entry.executor} ${user.username} isimli kullanıcının banını kaldırdı. Kalan izin sayısı ${permission.count - 1}`));
+            client.extention.emit('Logger', 'Guard', entry.executor.id, "MEMBER_BAN_REMOVE", `${user.username} isimli kullanıcının banını kaldırdı. Kalan izin sayısı ${permission ? permission.count - 1 : "sınırsız"}`);
+            return;
         }
         if (permission) await Permissions.deleteOne({ user: entry.executor.id, type: "unban", effect: "member" });
         await guild.members.ban(user.id, { reason: "Sağ Tık UnBan" });
         const exeMember = guild.members.cache.get(entry.executor.id);
         client.extention.emit('Jail', exeMember, client.user.id, "KDE - Sağ Tık UnBan", "Perma", 0);
-        await emoji.guild.channels.cache.get(channels.get("kde").value()).send(new MessageEmbed().setDescription(`${emojis.get("ban").value()} ${entry.executor} ${user.username} isimli kullanıcının banını kaldırdığı için PermaJail uygulandı.`));
+        client.extention.emit('Logger', 'KDE', entry.executor.id, "MEMBER_BAN_REMOVE", `${user.username} isimli kullanıcının banını kaldırdı`);
 
     }
 }
