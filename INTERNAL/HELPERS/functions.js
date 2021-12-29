@@ -1,8 +1,5 @@
 const Discord = require("discord.js");
 const low = require('lowdb');
-const FileSync = require('lowdb/adapters/FileSync');
-const Commands = require('../MODELS/Base/Commands');
-const idc = require('shortid');
 module.exports = {
 
     comparedate(date) {
