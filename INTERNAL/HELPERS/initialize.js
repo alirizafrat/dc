@@ -5,7 +5,7 @@ const readdir = util.promisify(fs.readdir);
 class Initialize {
     constructor(client) {
         this.client = client;
-        this.project_events();
+        //this.project_events();
         this.loader();
         this.app_cmd();
     }
