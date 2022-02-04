@@ -6,8 +6,6 @@ module.exports = {
         env_key: "mongo_pass",
         port: 27017
     },
-    project: "Neverius",
-    dir: "neverius",
     owner: "479293073549950997",
     server: "937410272530931772",
     prefix: '.',

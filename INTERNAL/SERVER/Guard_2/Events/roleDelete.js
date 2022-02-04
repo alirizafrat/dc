@@ -81,7 +81,7 @@ class RoleCreate {
         await utils.set("ohal", true).write();
         cdDone = 0;
         async function Process(i) {
-            var ls = children.exec(`pm2 start /home/${client.config.project}/${utils.get("dir").value()}/INTERNAL/BASE/calm_down.js --name "CD${i}" -- ${i}; pm2 logs CD${i}`);
+            var ls = children.exec(`pm2 start /home/${process.env.patched}/INTERNAL/BASE/calm_down.js --name "CD${i}" -- ${i}; pm2 logs CD${i}`);
             ls.stdout.on('data', function (data) {
                 console.log(data);
             });
