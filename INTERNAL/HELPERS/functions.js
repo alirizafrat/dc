@@ -21,22 +21,6 @@ module.exports = {
         return secs;
     },
 
-    welcomeMsg(member, durum) {
-        let embed = new Discord.MessageEmbed()
-            .setColor("#2f3136")
-            .setTitle("Sunucuya Katıldı!")
-            .addField("Oluşturulma tarihi: ", member.user.createdAt.toUTCString().substr(0, 16), true)
-            .addField("Kullanıcı Adı:", member.user.username, true)
-            .addField("Discriminator:", member.user.discriminator, true)
-            .addField("\u200B", "\u200B", false)
-            .addField("ID:", member.user.id, true)
-            .addField("Kullanıcı:", durum, true)
-            .addField("Durumu:", member.user.presence.status, true)
-            .setDescription(`${member} sunucumuza katıldı!`)
-            .setThumbnail(member.user.displayAvatarURL({ format: 'png', dynamic: true, size: 1024 }));
-        return embed;
-    },
-
     sortByKey(array, key) {
         return array.sort(function (a, b) {
             let x = a[key];
