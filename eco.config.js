@@ -1,12 +1,12 @@
 module.exports = {
   apps: [
     {
-      name: "Counter",
+      name: "Generic",
       script: 'index.js',
       watch: false,
       exec_mode: "cluster",
       max_memory_restart: "2G",
-      cwd: "./INTERNAL/BOTS/Counter"
+      cwd: "./INTERNAL/BOTS/Generic"
     },
     {
       name: "Guard_1",
@@ -63,14 +63,6 @@ module.exports = {
       exec_mode: "cluster",
       max_memory_restart: "2G",
       cwd: "./INTERNAL/BOTS/Moderator"
-    },
-    {
-      name: "Welcome",
-      script: 'index.js',
-      watch: false,
-      exec_mode: "cluster",
-      max_memory_restart: "2G",
-      cwd: "./INTERNAL/BOTS/_Welcome"
     }
   ]
 };
