@@ -1,11 +1,12 @@
-const model = require('../../../MODELS/StatUses/Invites');
+const model = require('../../../MODELS/UserUtil/member');
 const cmutes = require('../../../MODELS/Moderation/ChatMuted');
 const Jails = require('../../../MODELS/Moderation/Jails');
 const regData = require('../../../MODELS/Datalake/Registered');
 const low = require("lowdb");
 const Discord = require('discord.js');
-const { welcomeMsg, checkDays, rain } = require('../../../HELPERS/functions');
+const { checkDays, rain } = require('../../../HELPERS/functions');
 const { stripIndents } = require('common-tags');
+
 class GuildMemberAdd {
 
     constructor(client) {
@@ -63,7 +64,7 @@ class GuildMemberAdd {
                 count = dosyam.length + 1 || 1;
             }
         });
-        let pointed = '•';
+        let pointed = client.config.extag;
         if (client.config.tag.some(t => member.user.username.includes(t))) {
             pointed = client.config.tag;
             await member.roles.add(roles.get("taglı").value());

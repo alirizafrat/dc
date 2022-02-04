@@ -2,9 +2,11 @@ const { Client, Collection } = require('discord.js');
 const FileSync = require('lowdb/adapters/FileSync');
 const { EventEmitter } = require('events');
 require('dotenv').config({ path: __dirname + '/.env' });
+
 class Tantoony extends Client {
     constructor(options, name) {
         super(options);
+        this.models = require('./db_models');
         this.config = require('../HELPERS/config');
         this.logger = require("../HELPERS/logger");
         this.functions = require("../HELPERS/functions");
@@ -77,9 +79,6 @@ class Tantoony extends Client {
         try {
             const props = new (require(`../BOTS/${this.name}/${intType}/${intName}`))(this);
             this.logger.log(`Loading "${intType}" Integration in ${this.name}: ${props.info.name} 👌`, "load");
-            if (props.init) {
-                props.init(this);
-            }
             this.responders.set(`${intType}:${props.info.name}`, props);
             return false;
         } catch (e) {

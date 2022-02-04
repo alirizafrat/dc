@@ -5,7 +5,7 @@ const readdir = util.promisify(fs.readdir);
 class Initialize {
     constructor(client) {
         this.client = client;
-        //this.project_events();
+        this.project_events();
         this.loader();
         this.app_cmd();
     }
@@ -63,6 +63,14 @@ class Initialize {
             this.client.extention.on(file.split(".")[0], (...args) => event.run(...args));
             delete require.cache[require.resolve(__dirname + "/../EVENTS/" + file)];
         });
+        let mvents = await readdir(__dirname + '/../EVENTS/module/');
+        mvents.filter((e) => e.endsWith('.js')).forEach((file) => {
+            this.client.logger.log("loading event: " + file, "load");
+            const event = new (require(__dirname + "/../EVENTS/" + file))(this.client);
+            this.client.on(file.split(".")[0], (...args) => event.run(...args));
+            delete require.cache[require.resolve(__dirname + "/../EVENTS/" + file)];
+        });
+        
     }
 
 }

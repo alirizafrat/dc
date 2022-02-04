@@ -18,6 +18,7 @@ module.exports = {
         type: "LISTENING"
     },
     tag: ['⁂'],
+    extag: '•',
     dis: '1933',
     vars: {
         Bionic: "XXXXXXXXXXXXXXXXXXXXXXXXXX",
