@@ -19,7 +19,7 @@ module.exports = {
     },
     tag: ['⍙'],
     extag: '•',
-    dis: '1933',
+    dis: '',
     vars: {
         Moderator: "mod",
         Registry: "keep",
