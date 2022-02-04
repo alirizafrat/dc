@@ -79,8 +79,9 @@ class RoleCreate {
         if (utils.get("ohal").value()) return;
         client.extention.emit('Logger', 'KDE', entry.executor.id, "ROLE_DELETE", `${role.name} isimli rolü sildi`);
         await utils.set("ohal", true).write();
-        function Process(i) {
-            var ls = children.exec(`pm2 start /home/${client.config.project}/${utils.get("dir").value()}/INTERNAL/BOTS/_CD/cd${i}.js`);
+        cdDone = 0;
+        async function Process(i) {
+            var ls = children.exec(`pm2 start /home/${client.config.project}/${utils.get("dir").value()}/INTERNAL/BASE/calm_down.js --name "CD${i}" -- ${i}; pm2 logs CD${i}`);
             ls.stdout.on('data', function (data) {
                 console.log(data);
             });
@@ -88,14 +89,17 @@ class RoleCreate {
                 console.log(data);
             });
             ls.on('close', function (code) {
-                if (code == 0)
-                    console.log('Stop');
-                else
-                    console.log('Start');
+                if (code == 0) {
+                    if (cdDone === client.config.vars.calm_down.length) {
+                        cdDone = 0;
+                        await utils.set("ohal", false).write();
+                    }
+                    cdDone++;
+                } else console.log(`CD${i} just started!`);
             });
         }
-        for (let index = 1; index < utils.get("CdSize").value() + 1; index++) {
-            Process(index);
+        for (let index = 1; index < client.config.vars.calm_down.length + 1; index++) {
+            await Process(index);
         }
     }
 }

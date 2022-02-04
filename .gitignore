@@ -1,6 +1,6 @@
 .idea/
 *.json
-
+language.js
 # Logs
 logs
 *.log
