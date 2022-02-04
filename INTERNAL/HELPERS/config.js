@@ -2,49 +2,39 @@ module.exports = {
     mongoDB: {
         auth: "admin",
         user: "Tantoony",
-        name: "dbname",
-        env_key: "asdasdasd",
+        name: "Neverius",
+        env_key: "mongo_pass",
         port: 27017
     },
     owner: "479293073549950997",
-    server: "864473575792967690",
+    server: "937410272530931772",
     prefix: '.',
     status: {
-        name: "💯 Asgard Kill Zone",
+        name: "Equipto & Nickatina",
         type: "LISTENING"
     },
     cdStatus: {
-        name: "💯 Asgard Kill Zone",
+        name: "Bağırın bu sizin sonunuz olacak :)",
         type: "LISTENING"
     },
-    tag: ['⁂'],
+    tag: ['⍙'],
     extag: '•',
     dis: '1933',
     vars: {
-        Bionic: "XXXXXXXXXXXXXXXXXXXXXXXXXX",
-        Cronic: "XXXXXXXXXXXXXXXXXXXXXXXXXX",
-        Dynamic: "XXXXXXXXXXXXXXXXXXXXXXXXXX",
-        Generic: "XXXXXXXXXXXXXXXXXXXXXXXXXX",
-        Guard_1: "XXXXXXXXXXXXXXXXXXXXXXXXXX",
-        Guard_2: "XXXXXXXXXXXXXXXXXXXXXXXXXX",
-        Guard_3: "XXXXXXXXXXXXXXXXXXXXXXXXXX",
-        Guard_4: "XXXXXXXXXXXXXXXXXXXXXXXXXX",
-        Guard_5: "XXXXXXXXXXXXXXXXXXXXXXXXXX",
-        SES: [
-            "XXXXXXXXXXXXXXXXXXXXXXXXXX",
-            "XXXXXXXXXXXXXXXXXXXXXXXXXX",
-            "XXXXXXXXXXXXXXXXXXXXXXXXXX",
-            "XXXXXXXXXXXXXXXXXXXXXXXXXX",
-            "XXXXXXXXXXXXXXXXXXXXXXXXXX"
-        ],
+        Moderator: "mod",
+        Registry: "keep",
+        Generic: "keep",
+        Guard_1: "guard",
+        Guard_2: "guard",
+        Guard_3: "guard",
+        Guard_4: "guard",
+        Guard_5: "guard",
         calm_down: [
-            "XXXXXXXXXXXXXXXXXXXXXXXXXX",
-            "XXXXXXXXXXXXXXXXXXXXXXXXXX",
-            "XXXXXXXXXXXXXXXXXXXXXXXXXX",
-            "XXXXXXXXXXXXXXXXXXXXXXXXXX",
-            "XXXXXXXXXXXXXXXXXXXXXXXXXX",
-            "XXXXXXXXXXXXXXXXXXXXXXXXXX",
-            "XXXXXXXXXXXXXXXXXXXXXXXXXX",
+            "1",
+            "2",
+            "3"
+        ],
+        SES: [
             "XXXXXXXXXXXXXXXXXXXXXXXXXX",
             "XXXXXXXXXXXXXXXXXXXXXXXXXX",
             "XXXXXXXXXXXXXXXXXXXXXXXXXX",
