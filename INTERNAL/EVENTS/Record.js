@@ -1,4 +1,3 @@
-const Punishments = require('../MODELS/StatUses/Punishments');
 
 class Record {
     constructor(client) {
@@ -14,12 +13,11 @@ class Record {
             duration: duration || 0,
             created: new Date()
         };
-        const records = await Punishments.findOne({ _id: user });
+        const records = await this.client.models.crimeData.findOne({ _id: user });
         if (!records) {
-            const record = new Punishments({ _id: user, records: [] });
-            await record.save();
+            await this.client.models.crimeData.create({ _id: user, records: [] });
         }
-        await Punishments.updateOne({ _id: user }, { $push: { records: peer } });
+        await this.client.models.crimeData.updateOne({ _id: user }, { $push: { records: peer } });
     }
 }
 

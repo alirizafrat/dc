@@ -7,6 +7,6 @@ const client = new Tantoony({
         Intents.FLAGS.GUILD_INTEGRATIONS,
         Intents.FLAGS.GUILD_WEBHOOKS
     ]
-}, __dirname.split('\\').pop());
+}, __dirname.split('/').pop());
 process.on("warning", (warn) => { client.logger.log(warn, "varn") });
 process.on("beforeExit", () => { console.log('Bitiriliyor...'); });

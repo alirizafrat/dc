@@ -4,11 +4,25 @@ module.exports = class {
     }
     async run(interaction) {
         const client = this.client;
-        if (message.guild && (message.guild.id !== client.config.server)) return;
+        if (interaction.guild && (interaction.guild.id !== client.config.server)) return;
         let cmd = `Button:${interaction.name}`;
+        console.log(cmd);
         if (client.responders.has(cmd)) {
             cmd = client.responders.get(cmd);
         } else return;
+        let uCooldown = client.cmdCoodown[interaction.user.id];
+        if (!uCooldown) {
+            client.cmdCoodown[interaction.user.id] = {};
+            uCooldown = client.cmdCoodown[interaction.user.id];
+        }
+        let time = uCooldown[`Button:${interaction.name}`] || 0;
+        if (time && (time > Date.now())) return;
+        try {
+            cmd.run(client, int);
+        } catch (e) {
+            console.log(e);
+        }
+
 
     }
 }

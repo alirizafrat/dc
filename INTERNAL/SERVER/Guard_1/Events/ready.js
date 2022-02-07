@@ -1,7 +1,3 @@
-const overwrites = require("../../../MODELS/Datalake/backup_overwrite");
-const TextChannels = require("../../../MODELS/Datalake/backup_text");
-const VoiceChannels = require('../../../MODELS/Datalake/backup_voice');
-const CatChannels = require('../../../MODELS/Datalake/backup_category');
 class Ready {
 
     constructor(client) {
@@ -9,23 +5,18 @@ class Ready {
     }
 
     async run(client) {
-        client = this.client;
-        const guild = client.guilds.cache.get(client.config.server);
+        client = this.client.handler.hello(this.client);
         client.logger.log(`${client.user.tag}, ${client.users.cache.size} kişi için hizmet vermeye hazır!`, "ready");
-        await client.user.setPresence({ activity: client.config.status, status: "idle" });
-        client.owner = client.users.cache.get(client.config.owner);
-        const channels = guild.channels.cache.array();
+        client.user.setPresence({ activity: client.config.status, status: "idle" });
+        const channels = client.guild.channels.cache.map(c => c);
         for (let index = 0; index < channels.length; index++) {
             const channel = channels[index];
-            const olddata = await overwrites.findOne({ _id: channel.id });
-            if (!olddata) {
-                const newData = new overwrites({ _id: channel.id, overwrites: channel.permissionOverwrites.array() });
-                await newData.save();
-            }
+            const olddata = await client.models.bc_ovrts.findOne({ _id: channel.id });
+            if (!olddata) await client.models.bc_ovrts.create({ _id: channel.id, overwrites: channel.permissionOverwrites.array() });
             if ((channel.type === 'text') || (channel.type === 'news')) {
-                const channelData = await TextChannels.findOne({ _id: channel.id });
+                const channelData = await client.models.bc_text.findOne({ _id: channel.id });
                 if (!channelData) {
-                    const newData = new TextChannels({
+                    await client.models.bc_text.create({
                         _id: channel.id,
                         name: channel.name,
                         nsfw: channel.nsfw,
@@ -33,31 +24,28 @@ class Ready {
                         position: channel.position,
                         rateLimit: channel.rateLimit
                     });
-                    await newData.save();
                 }
             }
             if (channel.type === 'voice') {
-                const channelData = await VoiceChannels.findOne({ _id: channel.id });
+                const channelData = await client.models.bc_voice.findOne({ _id: channel.id });
                 if (!channelData) {
-                    const newData = new VoiceChannels({
+                    await client.models.bc_voice.create({
                         _id: channel.id,
                         name: channel.name,
                         bitrate: channel.bitrate,
                         parentID: channel.parentID,
                         position: channel.position
                     });
-                    await newData.save();
                 }
             }
             if (channel.type === 'category') {
-                const channelData = await CatChannels.findOne({ _id: channel.id });
+                const channelData = await client.models.bc_cat.findOne({ _id: channel.id });
                 if (!channelData) {
-                    const newData = new CatChannels({
+                    await client.models.bc_cat.create({
                         _id: channel.id,
                         name: channel.name,
                         position: channel.position
                     });
-                    await newData.save();
                 }
             }
 

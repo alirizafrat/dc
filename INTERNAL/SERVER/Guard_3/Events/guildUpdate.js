@@ -10,7 +10,7 @@ class GuildUpdate {
     async run(oldGuild, curGuild) {
         const client = this.client;
         if (curGuild.id !== client.config.server) return;
-        const entry = await curGuild.fetchAuditLogs({type: 'GUILD_UPDATE'}).then(logs => logs.entries.first());
+        const entry = await client.fetchEntry("GUILD_UPDATE");
         const utils = await low(client.adapters('utils'));
         if (entry.createdTimestamp <= Date.now() - 5000) return;
         if (entry.executor.id === client.user.id) return;

@@ -1,4 +1,3 @@
-const VoiceMuted = require('../MODELS/Moderation/VoiceMuted');
 class PermaBanEvent {
     constructor(client) {
         this.client = client;
@@ -7,16 +6,15 @@ class PermaBanEvent {
         const client = this.client;
         const voice = member.voice;
         if (voice && voice.channel) await voice.setMute(true, reason);
-        const Ban = await VoiceMuted.findOne({ _id: member.user.id });
+        const Ban = await this.client.models.vmute.findOne({ _id: member.user.id });
         if (!Ban) {
-            let pban = new VoiceMuted({
+            await this.client.models.vmute.create({
                 _id: member.user.id,
                 executor: executor,
                 reason: reason,
                 duration: Number(duration) || 0,
                 created: new Date()
             });
-            await pban.save();
         }
         client.extention.emit('Record', executor, member.user.id, reason, "V-Mute", "temp", duration);
     }

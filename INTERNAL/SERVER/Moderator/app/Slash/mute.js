@@ -1,10 +1,11 @@
 const { ApplicationCommand } = require('discord.js');
 
 module.exports = class SlashMute extends ApplicationCommand {
-    constructor(client) {
-        super(client, {
-            name: "jail",
+    constructor(client, data, guild, guildId) {
+        super(client, data = {
+            name: "mute",
             description: "Kullanıcıyı cezalıya atar",
+            default_permission: false,
             options: [
                 {
                     type: "USER",
@@ -18,12 +19,12 @@ module.exports = class SlashMute extends ApplicationCommand {
                     description: "mute türü",
                     choices: [
                         {
-                            name: "chat mute",
-                            value: "chat"
+                            name: "chat",
+                            value: "cMute"
                         },
                         {
-                            name: "voice mute",
-                            value: "voice"
+                            name: "voice",
+                            value: "vMute"
                         }
                     ],
                     required: true,
@@ -39,21 +40,27 @@ module.exports = class SlashMute extends ApplicationCommand {
                     name: "sebep",
                     description: "Ceza sebebi",
                     required: true,
-                },
-                {
-                    type: "STRING",
-                    name: "not",
-                    description: "Ceza notu",
-                    required: false,
                 }
-            ]
-        }, client.guild, client.guild.id);
-        this.init();
+            ],
+            guildId: [guildId]
+        }, guild, guildId);
+        this.permissions = client.config.staff.slice(5).map(o => {
+            return {
+                id: o,
+                type: "ROLE",
+                permission: true
+            }
+        });
     }
-    run() {
+    async run(intg) {
+        const target = intg.guild.members.cache.get(intg.options["kullanıcı"]);
+        if (!target) return intg.reply({ content: `Kullanıcı bulunamadı. Lütfen etiketleyerek işlem yapmayı deneyin.`, ephemeral: true, fetchReply: true });
 
-    }
-    init() {
+        if (intg.member.roles.highest.rawPosition <= target.roles.highest.rawPosition) return await intg.reply(`${emojis.get("missingPerms").value()} Bunu yapmak için yeterli yetkiye sahip değilsin`, {
+            ephemeral: true
+        });
+        await client.extention.emit(intg.options["tür"], target, intg.user.id, intg.options["sebep"], intg.options["süre"]);
+
 
     }
 }

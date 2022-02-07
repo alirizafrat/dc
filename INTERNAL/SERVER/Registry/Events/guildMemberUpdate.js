@@ -1,8 +1,4 @@
-const models = require('../../../MODELS/Datalake/MemberRoles');
-const cmutes = require('../../../MODELS/Moderation/ChatMuted');
-const pJails = require('../../../MODELS/Moderation/Jails');
 const low = require("lowdb");
-const Discord = require('discord.js');
 class GuildMemberUpdate {
     constructor(client) {
         this.client = client;
@@ -15,34 +11,29 @@ class GuildMemberUpdate {
         const roles = await low(client.adapters('roles'));
         const emojis = await low(client.adapters('emojis'));
         const channels = await low(client.adapters('channels'));
-        const embed = new Discord.MessageEmbed().setColor("#2f3136").setTimestamp().setAuthor(`Hepinizi Seviyorum 💖 Tantoony`, client.owner.displayAvatarURL());
+
+        const memberDb = await client.models.members.findOne({ _id: cur.user.id });
         if (prev && prev.roles.cache.has(roles.get("booster").value()) && !cur.roles.cache.has(roles.get("booster").value())) {
-            let nameDB = await names.findOne({ _id: cur.user.id });
-            if (!nameDB) {
+            const pointed = client.config.tag.some(t => target.user.username.includes(t)) ? client.config.tag[0] : client.config.extag;
+            await cur.setNickname(`${pointed} ${memberDb.name} | ${memberDb.age}`);
+            if (!memberDb) {
                 await cur.roles.remove(cur.roles.cache.array());
                 await cur.roles.add(roles.get("welcome").value());
-            } else {
-                let pointed = '•';
-                if (cur.user.username.includes(client.config.tag)) {
-                    pointed = client.config.tag;
-                };
-                await cur.setNickname(`${pointed} ${nameDB.name}`);
-            };
-        };
+            }
+        }
         const entry = await cur.guild.fetchAuditLogs({ type: "MEMBER_ROLE_UPDATE" }).then(logs => logs.entries.first());
         if (entry.createdTimestamp <= Date.now() - 5000) return;
         let roleNames = await cur.roles.cache.map(role => role.name);
         if (!utils.get("ohal").value()) {
-            const model = await models.findOne({ _id: cur.user.id });
+            const model = await client.models.mem_roles.findOne({ _id: cur.user.id });
             if (!model) {
-                let saver = new models({ _id: cur.user.id, roles: roleNames });
-                await saver.save();
+                await client.models.mem_roles.create({ _id: cur.user.id, roles: roleNames });
             } else {
-                await models.updateOne({ _id: cur.user.id }, { $set: { roles: roleNames } });
+                await client.models.mem_roles.updateOne({ _id: cur.user.id }, { $set: { roles: roleNames } });
                 client.logger.log(`${entry.executor.username} => [${entry.changes[0].key}] ${entry.target.username} : ${entry.changes[0].new[0].name}`, "mngdb");
             }
         }
-        const cmute = await cmutes.findOne({ _id: cur.user.id });
+        const cmute = await client.models.cmute.findOne({ _id: cur.user.id });
         if (cmute && !cur.roles.cache.has(roles.get("muted").value()) && !entry.executor.bot) {
             await cur.roles.add(roles.get("muted").value());
             const exeMember = cur.guild.members.cache.get(entry.executor.id);
@@ -50,7 +41,7 @@ class GuildMemberUpdate {
             client.extention.emit("Jail", exeMember, this.client.user.id, "KDE - Mute Açma", "Perma", 1);
             await cur.guild.channels.cache.get(channels.get("backup").value()).send(embed.setDescription(`${emojis.get("role").value()} ${exeMember} Adlı Kullanıcı ${cur} Adlı Kullanıcının Mutesini Açmaya Çalıştı Gerekeni Yaptım`));
         };
-        const pJail = await pJails.findOne({ _id: cur.user.id });
+        const pJail = await client.models.cmute.jail.findOne({ _id: cur.user.id });
         if (pJail && !entry.executor.bot) {
             await cur.roles.remove(cur.roles.cache.filter(r => r.id !== roles.get("booster").value()).filter(r => r.editable).array());
             await cur.roles.add(roles.get("prisoner").value());

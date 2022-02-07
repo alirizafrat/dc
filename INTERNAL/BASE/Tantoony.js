@@ -1,22 +1,25 @@
 const { Client, Collection } = require('discord.js');
 const FileSync = require('lowdb/adapters/FileSync');
 const { EventEmitter } = require('events');
-require('dotenv').config({ path: __dirname + '/.env' });
+const Lowdb = require('lowdb');
 
 class Tantoony extends Client {
     constructor(options, name) {
         super(options);
+        this.name = name;
+        this.defaly = require('./class_types');
         this.models = require('./db_models');
         this.config = require('../HELPERS/config');
         this.logger = require("../HELPERS/logger");
         this.functions = require("../HELPERS/functions");
         this.extention = new EventEmitter();
-        this.name = name.startsWith('CD') ? this.config.vars.calm_down[name.split('_').pop()] : this.config.vars[name];
         this.adapters = file => new FileSync(`../../BASE/_${file}.json`);
+        (() => {
+            require('dotenv').config({ path: __dirname + '/.env' });
+            this.login(process.env[this.config.vars[name]]);
+        })();
         this.mongoLogin();
-        this.login(process.env[this.config.vars[name]]);
         this.responders = new Collection();
-
         this.cmdCoodown = new Object();
         this.leaves = new Map();
         this.deleteChnl = new Map();
@@ -33,11 +36,11 @@ class Tantoony extends Client {
     };
 
     mongoLogin() {
-        require('mongoose').connect(`mongodb://${process.env[this.config.mongoDB.env_key]}:${this.config.mongoDB.port}`, {
+        require('mongoose').connect(`mongodb://${process.env.mongo_pass}:${this.config.mongoDB.port}`, {
             user: this.config.mongoDB.user,
             pass: process.env.mongoDB,
-            dbName: this.config.mongoDB.name,
-            authSource: this.config.mongoDB.auth
+            authSource: this.config.mongoDB.auth,
+            dbName: this.config.mongoDB.name
         }).then(() => {
             this.logger.log("Connected to the Mongodb database.", "mngdb");
         }).catch((err) => {
@@ -75,11 +78,21 @@ class Tantoony extends Client {
         };
     }
 
-    load_int(intName, intType) {
+    async load_int(intName, intType, client) {
+        const roles = Lowdb(this.adapters('roles'));
         try {
-            const props = new (require(`../BOTS/${this.name}/${intType}/${intName}`))(this);
-            this.logger.log(`Loading "${intType}" Integration in ${this.name}: ${props.info.name} 👌`, "load");
-            this.responders.set(`${intType}:${props.info.name}`, props);
+            const props = new (require(`../SERVER/${this.name}/app/${intType}/${intName}`))(client, {}, client.guild, this.config.server);
+            const cmd = await client.guild.commands.create(props, this.config.server);
+            props.id = cmd.id;
+            this.logger.log(`Loading "${intType}" Integration in ${this.name}: ${cmd.name} [${props.id}] 👌`, "load");
+            client.responders.set(`${intType}:${cmd.name}`, props);
+            client.guild.commands.permissions.set({
+                command: cmd.id,
+                permissions: props.permissions.map(p => {
+                    p["id"] = roles.get("cmd-" + p.id).value() ||roles.get(p.id).value();
+                    return p;
+                })
+            });
             return false;
         } catch (e) {
             return `Unable to load "${intType}" Integration ${intName}: ${e}`;
@@ -97,10 +110,14 @@ class Tantoony extends Client {
         if (ress.shutdown) {
             await ress.shutdown(this);
         }
-        delete require.cache[require.resolve(`../BOTS/${this.name}/${intType}/${intName}.js`)];
+        delete require.cache[require.resolve(`../SERVER/${this.name}/app/${intType}/${intName}.js`)];
         return false;
     }
 
+    async fetchEntry(action) {
+        const entry = await this.client.guild.fetchAuditLogs({ type: action }).then((logs) => logs.entries.first());
+        return entry;
+    }
 
 }
 module.exports = Tantoony;

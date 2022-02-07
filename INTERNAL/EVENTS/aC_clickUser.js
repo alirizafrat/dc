@@ -4,11 +4,17 @@ module.exports = class {
     }
     async run(interaction) {
         const client = this.client;
-        if (message.guild && (message.guild.id !== client.config.server)) return;
-        let cmd = `User:${interaction.name}`;
+        if (interaction.guild && (interaction.guild.id !== client.config.server)) return;
+        let cmd = `User:${interaction.commandName}`;
         if (client.responders.has(cmd)) {
             cmd = client.responders.get(cmd);
         } else return;
+        try {
+            cmd.run(client, interaction);
+        } catch (e) {
+            console.log(e);
+        }
+
 
     }
 }

@@ -1,10 +1,11 @@
 const { ApplicationCommand } = require('discord.js');
 
 module.exports = class SlashRol extends ApplicationCommand {
-    constructor(client) {
-        super(client, {
+    constructor(client, data, guild, guildId) {
+        super(client, data = {
             name: "rol",
             description: "Kullanıcıya rol ver/al",
+            default_permission: false,
             options: [
                 {
                     type: "SUB_COMMAND",
@@ -48,40 +49,6 @@ module.exports = class SlashRol extends ApplicationCommand {
                     ]
                 },
                 {
-                    type: "USER",
-                    name: "kullanıcı",
-                    description: "Rol verilecek kullanıcı/id",
-                    required: true,
-                },
-                {
-                    type: "STRING",
-                    name: "rol",
-                    description: "verilecek rol",
-                    choices: [
-                        {
-                            name: "chat mute",
-                            value: "chat"
-                        },
-                        {
-                            name: "voice mute",
-                            value: "voice"
-                        }
-                    ],
-                    required: true,
-                },
-                {
-                    type: "STRING",
-                    name: "detay",
-                    description: "sebep detayı",
-                    required: false,
-                },
-                {
-                    type: "STRING",
-                    name: "not",
-                    description: "İşlem notu",
-                    required: false,
-                },
-                {
                     type: "SUB_COMMAND",
                     name: "al",
                     description: "Kullanıcıdan rol alır",
@@ -121,49 +88,19 @@ module.exports = class SlashRol extends ApplicationCommand {
                             required: false,
                         }
                     ]
-                },
-                {
-                    type: "USER",
-                    name: "kullanıcı",
-                    description: "Rol verilecek kullanıcı/id",
-                    required: true,
-                },
-                {
-                    type: "STRING",
-                    name: "rol",
-                    description: "verilecek rol",
-                    choices: [
-                        {
-                            name: "chat mute",
-                            value: "chat"
-                        },
-                        {
-                            name: "voice mute",
-                            value: "voice"
-                        }
-                    ],
-                    required: true,
-                },
-                {
-                    type: "STRING",
-                    name: "detay",
-                    description: "sebep detayı",
-                    required: false,
-                },
-                {
-                    type: "STRING",
-                    name: "not",
-                    description: "İşlem notu",
-                    required: false,
                 }
-            ]
-        }, client.guild, client.guild.id);
-        this.init();
+            ],
+            guildId: [guildId]
+        }, guild, guildId);
+        this.permissions = client.config.staff.slice(5).map(o => {
+            return {
+                id: o,
+                type: "ROLE",
+                permission: true
+            }
+        });
     }
-    run() {
-
-    }
-    init() {
+    async run(intg) {
 
     }
 }

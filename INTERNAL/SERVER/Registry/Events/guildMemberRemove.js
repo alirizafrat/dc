@@ -14,6 +14,8 @@ class GuildMemberRemove {
         const channels = await low(client.adapters('channels'));
         const embed = new Discord.MessageEmbed().setColor('#2f3136');
         const pruneentry = await member.guild.fetchAuditLogs({ type: "MEMBER_PRUNE" }).then(logs => logs.entries.first());
+        const model = await client.models.mem_roles.findOne({ _id: cur.user.id });
+        if (model) await client.models.mem_roles.delete({ _id: member.user.id });
         if (pruneentry && pruneentry.createdTimestamp >= Date.now() - 10000) {
             const removed = pruneentry.extra.removed;
             const days = pruneentry.extra.days;

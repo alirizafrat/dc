@@ -1,4 +1,3 @@
-const Jails = require('../MODELS/Moderation/Jails');
 const low = require('lowdb');
 
 class JailEvent {
@@ -6,27 +5,27 @@ class JailEvent {
         this.client = client;
     };
 
-    async run(member, executor, reason, type, duration) {
+    async run(member, executor, reason, type, duration, note) {
         const client = this.client;
         const roles = await low(client.adapters('roles'));
-        const memberRoles = member.roles.cache.filter(r => r.id !== roles.get("booster").value()).filter(r => r.editable).array();
+        const memberRoles = member.roles.cache.map(c => c).filter(r => r.id !== roles.get("booster").value());
         await member.roles.remove(memberRoles);
         await member.roles.add(roles.get("prisoner").value());
         let deletedRoles = await memberRoles.map(r => r.name);
-        const Jail = await Jails.findOne({ _id: member.user.id });
+        const Jail = await this.client.models.jail.findOne({ _id: member.user.id });
         if (!Jail) {
-            let pjail = new Jails({
+            this.client.models.jail.create({
                 _id: member.user.id,
                 executor: executor,
                 reason: reason,
                 roles: deletedRoles,
                 type: type,
                 duration: Number(duration) || 0,
-                created: new Date()
+                created: new Date(),
+                note: note
             });
-            await pjail.save();
         } else {
-            await Jails.updateOne({ _id: member.user.id }, { $inc: { duration: Number(duration) || 0 } });
+            await this.client.models.jail.updateOne({ _id: member.user.id }, { $inc: { duration: Number(duration) || 0 } });
         }
         client.extention.emit('Record', member.user.id, executor, reason, "Jail", type, duration);
     }

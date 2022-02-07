@@ -1,4 +1,3 @@
-const Permissions = require('../../../MODELS/Datalake/permit');
 const low = require('lowdb');
 
 class EmojiUpdate {
@@ -9,13 +8,13 @@ class EmojiUpdate {
     async run(oldEmoji, curEmoji) {
         const client = this.client;
         if (curEmoji.guild.id !== client.config.server) return;
-        const entry = await curEmoji.guild.fetchAuditLogs({ type: 'EMOJI_UPDATE' }).then(logs => logs.entries.first());
+        const entry = await client.fetchEntry("EMOJI_UPDATE");
         const utils = await low(client.adapters('utils'));
         if (entry.createdTimestamp <= Date.now() - 5000) return;
         if (entry.executor.id === client.user.id) return;
-        const permission = await Permissions.findOne({ user: entry.executor.id, type: "update", effect: "emoji" });
+        const permission = await client.models.perms.findOne({ user: entry.executor.id, type: "update", effect: "emoji" });
         if ((permission && (permission.count > 0)) || utils.get("root").value().includes(entry.executor.id)) {
-            if (permission) await Permissions.updateOne({
+            if (permission) await client.models.perms.updateOne({
                 user: entry.executor.id,
                 type: "update",
                 effect: "emoji"
@@ -23,7 +22,7 @@ class EmojiUpdate {
             client.extention.emit('Logger', 'Guard', entry.executor.id, "EMOJI_UPDATE", `${oldEmoji.name} isimli emojiyi yeniledi. Kalan izin sayısı ${permission ? permission.count - 1 : "sınırsız"}`);
             return;
         }
-        if (permission) await Permissions.deleteOne({ user: entry.executor.id, type: "update", effect: "emoji" });
+        if (permission) await client.models.perms.deleteOne({ user: entry.executor.id, type: "update", effect: "emoji" });
         const emoji = await curEmoji.edit({
             name: oldEmoji.name,
             roles: oldEmoji.roles

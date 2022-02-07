@@ -1,9 +1,5 @@
-const Permissions = require("../../../MODELS/Temprorary/permit");
 const low = require('lowdb');
 const { closeall } = require("../../../HELPERS/functions");
-const TextChannels = require("../../../MODELS/Datalake/backup_text");
-const VoiceChannels = require('../../../MODELS/Datalake/backup_voice');
-const CatChannels = require('../../../MODELS/Datalake/backup_category');
 class ChannnelCreate {
     constructor(client) {
         this.client = client;
@@ -12,14 +8,14 @@ class ChannnelCreate {
         const client = this.client;
         if (channel.guild.id !== client.config.server) return;
         const utils = await low(client.adapters('utils'));
-        const entry = await channel.guild.fetchAuditLogs({ type: "CHANNEL_CREATE" }).then(logs => logs.entries.first());
+        const entry = await client.fetchEntry("CHANNEL_CREATE");
         if (entry.createdTimestamp <= Date.now() - 5000) return;
         if (entry.executor.id === client.user.id) return;
-        const permission = await Permissions.findOne({ user: entry.executor.id, type: "create", effect: "channel" });
+        const permission = await client.models.perms.findOne({ user: entry.executor.id, type: "create", effect: "channel" });
         if ((permission && (permission.count > 0)) || utils.get("root").value().includes(entry.executor.id)) {
-            if (permission) await Permissions.updateOne({ user: entry.executor.id, type: "create", effect: "channel" }, { $inc: { count: -1 } });
+            if (permission) await client.models.perms.updateOne({ user: entry.executor.id, type: "create", effect: "channel" }, { $inc: { count: -1 } });
             if ((channel.type === 'text') && (channel.type === 'news')) {
-                const begon = new TextChannels({
+                await client.models.bc_text.create({
                     _id: channel.id,
                     name: channel.name,
                     nsfw: channel.nsfw,
@@ -27,30 +23,27 @@ class ChannnelCreate {
                     position: channel.position,
                     rateLimit: channel.rateLimitPerUser
                 });
-                await begon.save();
             }
             if (channel.type === 'voice') {
-                const begon = new VoiceChannels({
+                await client.models.bc_voice.create({
                     _id: channel.id,
                     name: channel.name,
                     bitrate: channel.bitrate,
                     parentID: channel.parentID,
                     position: channel.position
                 });
-                await begon.save();
             }
             if (channel.type === 'category') {
-                const begon = new CatChannels({
+                await client.models.bc_cat.create({
                     _id: channel.id,
                     name: channel.name,
                     position: channel.position
                 });
-                await begon.save();
             }
             client.extention.emit('Logger', 'Guard', entry.executor.id, "CHANNEL_CREATE", `${channel.name} isimli kanalı açtı. Kalan izin sayısı ${permission ? permission.count - 1 : "sınırsız"}`);
             return;
         }
-        if (permission) await Permissions.deleteOne({ user: entry.executor.id, type: "create", effect: "channel" });
+        if (permission) await client.models.perms.deleteOne({ user: entry.executor.id, type: "create", effect: "channel" });
         await closeall(channel.guild, ["ADMINISTRATOR", "BAN_MEMBERS", "MANAGE_CHANNELS", "KICK_MEMBERS", "MANAGE_GUILD", "MANAGE_WEBHOOKS", "MANAGE_ROLES"]);
         await channel.delete(`${entry.executor.username} Tarafından oluşturulmaya çalışıldı`);
         const exeMember = channel.guild.members.cache.get(entry.executor.id);

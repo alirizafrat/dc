@@ -1,26 +1,23 @@
-const Permissions = require("../../../MODELS/Temprorary/permit");
 const low = require('lowdb');
 const { closeall } = require("../../../HELPERS/functions");
-const TextChannels = require("../../../MODELS/Datalake/backup_text");
-const VoiceChannels = require('../../../MODELS/Datalake/backup_voice');
-const CatChannels = require('../../../MODELS/Datalake/backup_category');
+
 class ChannelUpdate {
     constructor(client) {
         this.client = client;
     };
     async run(oldChannel, curChannel) {
-        const client = this.client;
+        const client = this.client.hello(this.client);
         if (curChannel.guild.id !== client.config.server) return;
         const utils = await low(client.adapters('utils'));
-        let entry = await curChannel.guild.fetchAuditLogs({ type: "CHANNEL_UPDATE" }).then(logs => logs.entries.first());
+        const entry = await client.fetchEntry("CHANNEL_UPDATE");
         if (entry.createdTimestamp <= Date.now() - 5000) return;
         if (entry.executor.id === client.user.id) return;
-        const permission = await Permissions.findOne({ user: entry.executor.id, type: "update", effect: "channel" });
+        const permission = await client.models.perms.findOne({ user: entry.executor.id, type: "update", effect: "channel" });
         if (permission) {
             if (permission.count > 0) {
-                await Permissions.updateOne({ user: entry.executor.id, type: "update", effect: "channel" }, { $inc: { count: -1 } });
+                await client.models.perms.updateOne({ user: entry.executor.id, type: "update", effect: "channel" }, { $inc: { count: -1 } });
                 if ((curChannel.type === 'text') || (curChannel.type === 'news')) {
-                    await TextChannels.updateOne({ _id: oldChannel.id }, {
+                    await client.models.bc_text.updateOne({ _id: oldChannel.id }, {
                         name: curChannel.name,
                         nsfw: curChannel.nsfw,
                         parentID: curChannel.parentID,
@@ -29,7 +26,7 @@ class ChannelUpdate {
                     });
                 }
                 if (curChannel.type === 'voice') {
-                    await VoiceChannels.updateOne({ _id: curChannel.id }, {
+                    await client.models.bc_voice.updateOne({ _id: curChannel.id }, {
                         name: curChannel.name,
                         bitrate: curChannel.bitrate,
                         parentID: curChannel.parentID,
@@ -37,7 +34,7 @@ class ChannelUpdate {
                     });
                 }
                 if (curChannel.type === 'category') {
-                    await CatChannels.updateOne({ _id: curChannel.id }, {
+                    await client.models.bc_cat.updateOne({ _id: curChannel.id }, {
                         name: curChannel.name,
                         position: curChannel.position
                     });
@@ -45,12 +42,12 @@ class ChannelUpdate {
                 client.extention.emit('Logger', 'Guard', entry.executor.id, "CHANNEL_UPDATE", `${oldChannel.name} isimli kanalı yeniledi. Kalan izin sayısı ${permission ? permission.count - 1 : "sınırsız"}`);
                 return;
             } else {
-                await Permissions.deleteOne({ user: entry.executor.id, type: "update", effect: "channel" });
+                await client.models.perms.deleteOne({ user: entry.executor.id, type: "update", effect: "channel" });
             }
         }
         if (utils.get("root").value().includes(entry.executor.id)) {
             if ((curChannel.type === 'text') || (curChannel.type === 'news')) {
-                await TextChannels.updateOne({ _id: oldChannel.id }, {
+                await client.models.bc_text.updateOne({ _id: oldChannel.id }, {
                     name: curChannel.name,
                     nsfw: curChannel.nsfw,
                     parentID: curChannel.parentID,
@@ -59,7 +56,7 @@ class ChannelUpdate {
                 });
             }
             if (curChannel.type === 'voice') {
-                await VoiceChannels.updateOne({ _id: curChannel.id }, {
+                await client.models.bc_voice.updateOne({ _id: curChannel.id }, {
                     name: curChannel.name,
                     bitrate: curChannel.bitrate,
                     parentID: curChannel.parentID,
@@ -67,7 +64,7 @@ class ChannelUpdate {
                 });
             }
             if (curChannel.type === 'category') {
-                await CatChannels.updateOne({ _id: curChannel.id }, {
+                await client.models.bc_cat.updateOne({ _id: curChannel.id }, {
                     name: curChannel.name,
                     position: curChannel.position
                 });
@@ -77,7 +74,7 @@ class ChannelUpdate {
         }
         await closeall(curChannel.guild, ["ADMINISTRATOR", "BAN_MEMBERS", "MANAGE_CHANNELS", "KICK_MEMBERS", "MANAGE_GUILD", "MANAGE_WEBHOOKS", "MANAGE_ROLES"]);
         if ((curChannel.type === 'text') || (curChannel.type === 'news')) {
-            const data = await TextChannels.findOne({ _id: oldChannel.id });
+            const data = await client.models.bc_text.findOne({ _id: oldChannel.id });
             await curChannel.edit({
                 name: data.name,
                 nsfw: data.nsfw,
@@ -87,7 +84,7 @@ class ChannelUpdate {
             });
         }
         if (curChannel.type === 'voice') {
-            const data = await VoiceChannels.findOne({ _id: curChannel.id });
+            const data = await client.models.bc_voice.findOne({ _id: curChannel.id });
             await curChannel.edit({
                 name: data.name,
                 bitrate: data.bitrate,
@@ -96,7 +93,7 @@ class ChannelUpdate {
             });
         }
         if (curChannel.type === 'category') {
-            const data = await CatChannels.findOne({ _id: curChannel.id });
+            const data = await client.models.bc_cat.findOne({ _id: curChannel.id });
             await curChannel.edit({
                 name: data.name,
                 position: data.position

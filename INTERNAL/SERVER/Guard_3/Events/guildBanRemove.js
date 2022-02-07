@@ -1,4 +1,3 @@
-const Permissions = require('../../../MODELS/Temprorary/permit');
 const Punishments = require('../../../MODELS/StatUses/stat_crime');
 const low = require('lowdb');
 
@@ -10,14 +9,14 @@ class GuildBanAdd {
     async run(guild, user) {
         const client = this.client;
         if (guild.id !== client.config.server) return;
-        const entry = await guild.fetchAuditLogs({ type: 'MEMBER_BAN_REMOVE' }).then(logs => logs.entries.first());
+        const entry = await client.fetchEntry("MEMBER_BAN_REMOVE");
         const utils = await low(client.adapters('utils'));
         if (entry.createdTimestamp <= Date.now() - 5000) return;
         if (entry.executor.id === client.user.id) return;
         if (entry.executor.bot) return;
-        const permission = await Permissions.findOne({ user: entry.executor.id, type: "unban", effect: "member" });
+        const permission = await client.models.perms.findOne({ user: entry.executor.id, type: "unban", effect: "member" });
         if ((permission && (permission.count > 0)) || utils.get("root").value().includes(entry.executor.id)) {
-            if (permission) await Permissions.updateOne({
+            if (permission) await client.models.perms.updateOne({
                 user: entry.executor.id,
                 type: "unban",
                 effect: "member"
@@ -37,7 +36,7 @@ class GuildBanAdd {
             client.extention.emit('Logger', 'Guard', entry.executor.id, "MEMBER_BAN_REMOVE", `${user.username} isimli kullanıcının banını kaldırdı. Kalan izin sayısı ${permission ? permission.count - 1 : "sınırsız"}`);
             return;
         }
-        if (permission) await Permissions.deleteOne({ user: entry.executor.id, type: "unban", effect: "member" });
+        if (permission) await client.models.perms.deleteOne({ user: entry.executor.id, type: "unban", effect: "member" });
         await guild.members.ban(user.id, { reason: "Sağ Tık UnBan" });
         const exeMember = guild.members.cache.get(entry.executor.id);
         client.extention.emit('Jail', exeMember, client.user.id, "KDE - Sağ Tık UnBan", "Perma", 0);

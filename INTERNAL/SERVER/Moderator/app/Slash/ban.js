@@ -1,10 +1,11 @@
-const { ApplicationCommand } = require('discord.js');
+const { ApplicationCommand, Permissions } = require('discord.js');
 
 module.exports = class SlashBan extends ApplicationCommand {
-    constructor(client) {
-        super(client, {
+    constructor(client, data, guild, guildId) {
+        super(client, data = {
             name: "ban",
             description: "Kullanıcıyı sunucudan süreli veya süresiz banlar",
+            default_permission: false,
             options: [
                 {
                     type: "USER",
@@ -30,14 +31,31 @@ module.exports = class SlashBan extends ApplicationCommand {
                     description: "Ceza notu",
                     required: false,
                 }
-            ]
-        }, client.guild, client.guild.id);
-        this.init();
+            ],
+            guildId: [guildId]
+        }, guild, guildId);
+        this.permissions = client.config.staff.slice(5).map(o => {
+            return {
+                id: o,
+                type: "ROLE",
+                permission: true
+            }
+        });
     }
-    run() {
+    async run(intg) {
+        if (!intg.member.permissions.has(Permissions.FLAGS.BAN_MEMBERS) && !intg.member.roles.cache.has(client.config.staff.slice(5).map(o => o))) return;
+        const target = intg.guild.members.cache.get(intg.options["kullanıcı"]);
+        if (!target) return intg.reply({ content: `Kullanıcı bulunamadı. Lütfen etiketleyerek işlem yapmayı deneyin.`, ephemeral: true, fetchReply: true });
 
-    }
-    init() {
+        if (intg.member.roles.highest.rawPosition <= target.roles.highest.rawPosition) return await intg.reply(`${emojis.get("missingPerms").value()} Bunu yapmak için yeterli yetkiye sahip değilsin`, {
+            ephemeral: true
+        });
+        if (!target.bannable) return await intg.reply(`Bu kişiyi banlamak için yeterli yetkiye sahip değilim`, {
+            ephemeral: true
+        });
+        let typo = "perma";
+        if (intg.options["süre"]) typo = "temp";
+        await client.extention.emit('Ban', intg.guild, target.id, intg.user.id, intg.options["sebep"], typo, intg.options["süre"], intg.options["not"]);
 
     }
 }

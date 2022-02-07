@@ -1,25 +1,25 @@
-const BanS = require('../MODELS/Moderation/Ban');
-class PermaBanEvent {
+
+class BanEvt {
     constructor(client) {
         this.client = client;
     };
-    async run(guild, user, executor, reason, type, duration) {
+    async run(guild, user, executor, reason, type, duration, note) {
         const client = this.client;
         await guild.members.ban(user, { reason: reason })
-        const Ban = await BanS.findOne({ _id: user });
+        const Ban = await this.client.models.ban.findOne({ _id: user });
         if (!Ban) {
-            let pban = new BanS({
+             await this.client.models.ban.create({
                 _id: user,
                 executor: executor,
                 reason: reason,
                 type: type,
                 duration: Number(duration) || 0,
-                created: new Date()
+                created: new Date(),
+                note: note
             });
-            await pban.save();
         }
         client.extention.emit('Record', user, executor, reason, "Ban", type, duration);
 
     }
 }
-module.exports = PermaBanEvent;
+module.exports = BanEvt;

@@ -1,6 +1,4 @@
-const pjails = require('../../../MODELS/Moderation/Jails');
 const Discord = require('discord.js');
-const Tagli = require('../../../MODELS/Datalake/Tagli');
 const low = require('lowdb');
 class UserUpdate {
     constructor(client) {
@@ -25,13 +23,13 @@ class UserUpdate {
             await member.send(dmEmbed);
         }
         if (utils.get("forbidden").value().some(tag => oldUser.username.includes(tag)) && !utils.get("forbidden").value().some(tag => newUser.username.includes(tag))) {
-            const pjail = await pjails.findOne({ _id: newUser.id, reason: "YASAKLI TAG" });
+            const pjail = await client.models.jail.findOne({ _id: newUser.id, reason: "YASAKLI TAG" });
             if (pjail) {
                 await member.roles.remove(roles.get("prisoner").value());
                 let deletedRoles = [];
                 await pjail.roles.forEach(rolename => deletedRoles.push(guild.roles.cache.find(role => role.name === rolename).id));
                 await member.roles.add(deletedRoles);
-                await pjails.deleteOne({ _id: newUser.id });
+                await client.models.jail.deleteOne({ _id: newUser.id });
                 const embed = new Discord.MessageEmbed().setColor('#2f3136').setTitle("Yasaklı Tag Çıkarıldı").setThumbnail(newUser.displayAvatarURL())
                     .setDescription(`${member} kullanıcısı **${utils.get("forbidden").value().find(tag => oldUser.username.includes(tag) && !newUser.username.includes(tag))}* tagını çıkardığından dolayı hapisten çıkarıldı!`);
                 await guild.channels.cache.get(channels.get("ast-ytag").value()).send(embed);

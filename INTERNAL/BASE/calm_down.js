@@ -1,7 +1,6 @@
 const client = new (require('./Tantoony'))({
     fetchAllMembers: true
 }, `CD_${process.argv.pop()}`);
-const Members = require("../MODELS/Datalake/backup_member");
 client.on('ready', async () => {
     client.user.setPresence({ status: client.config.cdStatus });
     const guild = client.guilds.cache.get(client.config.server);
@@ -13,7 +12,7 @@ client.on('ready', async () => {
         if (i == array.length || !membr) {
             return require('child_process').exec(`pm2 delete cd_${process.argv.pop()}`)
         };
-        let rolesDataOfMembr = await Members.findOne({ _id: membr.user.id });
+        let rolesDataOfMembr = await this.client.models.members.findOne({ _id: membr.user.id });
         if (rolesDataOfMembr) {
             const newRoles = await rolesDataOfMembr.roles.filter((roleName) => guild.roles.cache.map(role => role.name).includes(roleName)).map((roleName) => guild.roles.cache.find(role => role.name === roleName).id);
             try {

@@ -6,20 +6,23 @@ class InteractionCreate {
         const client = this.client;
         if (interaction.guild && (interaction.guild.id !== client.config.server)) return;
         let respond;
-        switch (interraction.type) {
+        switch (interaction.type) {
             case "APPLICATION_COMMAND":
-                switch (interaction.command.type) {
-                    case "CHAT_INPUT":
-                        respond = 'aC_clickMsg';
-                        break;
-                    case "USER":
-                        respond = 'aC_clickUsr';
-                        break;
-                    case "MESSAGE":
-                        respond = 'aC_slash';
-                        break;
-                    default:
-                        break;
+                if (interaction.isContextMenu()) {
+                    switch (interaction.targetType) {
+                        case "USER":
+                            respond = 'aC_clickUser';
+                            break;
+                        case "MESSAGE":
+                            respond = 'aC_clickMsg';
+                            break;
+                        default:
+                            respond = 'aC_slash';
+                            break;
+
+                    }
+                } else {
+                    respond = 'aC_slash';
                 }
                 break;
             case "MESSAGE_COMPONENT":
@@ -28,13 +31,6 @@ class InteractionCreate {
             default:
                 break;
         }
-        let uCooldown = client.cmdCoodown[interaction.user.id];
-        if (!uCooldown) {
-            client.cmdCoodown[interaction.author.id] = {};
-            uCooldown = client.cmdCoodown[interaction.user.id];
-        }
-        let time = uCooldown[cmd.info.name] || 0;
-        if (time && (time > Date.now())) return;
         client.extention.emit(respond, interaction);
         return;
     }

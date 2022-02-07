@@ -7,6 +7,6 @@ const client = new Tantoony({
         Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS,
         Intents.FLAGS.GUILD_BANS
     ]
-}, __dirname.split('\\').pop());
+}, __dirname.split('/').pop());
 process.on("warning", (warn) => { client.logger.log(warn, "varn") });
 process.on("beforeExit", () => { console.log('Bitiriliyor...'); });
