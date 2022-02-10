@@ -72,7 +72,7 @@ class GuildMemberAdd {
         if (registered && !utils.get("taglıAlım").value()) return await member.roles.add(roles.get(registered.sex).value());
         await member.roles.add(roles.get("welcome").value());
         await member.guild.channels.cache.get(channels.get("welcome").value()).send(stripIndents`
-        ${emojis.get("hg")} Aramıza hoş geldin ${member}, eğer müsaitsen sunucumuza kayıt olmak için ses kanallarından birine girip bir yetkiliye ulaşabilirsin.       
+        ${emojis.get("hg").value()} Aramıza hoş geldin ${member}, eğer müsaitsen sunucumuza kayıt olmak için ses kanallarından birine girip bir yetkiliye ulaşabilirsin.       
        `);
     }
 }
