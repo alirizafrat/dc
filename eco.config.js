@@ -1,14 +1,6 @@
 module.exports = {
   apps: [
     {
-      name: "Generic",
-      script: 'index.js',
-      watch: false,
-      exec_mode: "cluster",
-      max_memory_restart: "2G",
-      cwd: "./INTERNAL/BOTS/Generic"
-    },
-    {
       name: "Guard_1",
       script: 'index.js',
       watch: false,
