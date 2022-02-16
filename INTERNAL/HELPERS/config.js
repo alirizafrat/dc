@@ -6,8 +6,8 @@ module.exports = {
         env_key: "mongo_pass",
         port: 27017
     },
-    owner: "479293073549950997",
-    server: "937410272530931772",
+    owner: "942697809080111145",
+    server: "933036847117008916",
     prefix: '.',
     status: {
         name: "Equipto & Nickatina",
