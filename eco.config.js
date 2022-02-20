@@ -1,60 +1,60 @@
 module.exports = {
   apps: [
     {
-      name: "Guard_1",
+      name: "guard_1",
       script: 'index.js',
       watch: false,
       exec_mode: "cluster",
       max_memory_restart: "2G",
-      cwd: "./INTERNAL/BOTS/Guard_1"
+      cwd: "./apps/Guard_1"
     },
     {
-      name: "Guard_2",
+      name: "guard_2",
       script: 'index.js',
       watch: false,
       exec_mode: "cluster",
       max_memory_restart: "2G",
-      cwd: "./INTERNAL/BOTS/Guard_2"
+      cwd: "./apps/Guard_2"
     },
     {
-      name: "Guard_3",
+      name: "guard_3",
       script: 'index.js',
       watch: false,
       exec_mode: "cluster",
       max_memory_restart: "2G",
-      cwd: "./INTERNAL/BOTS/Guard_3"
+      cwd: "./apps/Guard_3"
     },
     {
-      name: "Guard_4",
+      name: "guard_4",
       script: 'index.js',
       watch: false,
       exec_mode: "cluster",
       max_memory_restart: "2G",
-      cwd: "./INTERNAL/BOTS/Guard_4"
+      cwd: "./apps/Guard_4"
     },
     {
-      name: "Guard_5",
+      name: "guard_5",
       script: 'index.js',
       watch: false,
       exec_mode: "cluster",
       max_memory_restart: "2G",
-      cwd: "./INTERNAL/BOTS/Guard_5"
+      cwd: "./apps/Guard_5"
     },
     {
-      name: "Registry",
+      name: "registry",
       script: 'index.js',
       watch: false,
       exec_mode: "cluster",
       max_memory_restart: "2G",
-      cwd: "./INTERNAL/BOTS/Registry"
+      cwd: "./apps/Registry"
     },
     {
-      name: "Moderator",
+      name: "moderator",
       script: 'index.js',
       watch: false,
       exec_mode: "cluster",
       max_memory_restart: "2G",
-      cwd: "./INTERNAL/BOTS/Moderator"
+      cwd: "./apps/Moderator"
     }
   ]
 };
